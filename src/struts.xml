@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+	<package name="global" extends="json-default">
+		<interceptors>
+			<interceptor name="authority" class="org.filter.LogInterceptor" />
+			<interceptor-stack name="mydefault">
+				<interceptor-ref name="defaultStack" />
+				<interceptor-ref name="authority"></interceptor-ref>
+			</interceptor-stack>
+		</interceptors>
+		<default-interceptor-ref name="mydefault" />
+		<global-results>
+			<result type="json" name="error">
+				<param name="root">result</param>
+			</result>
+		</global-results>
+	</package>
+
+	<package name="ajax" extends="json-default,global" namespace="/">
+		<action name="login" class="org.action.ZUserAction" method="login">
+			<result type="json" name="success">
+				<param name="root">result</param>
+			</result>
+		</action>
+		<action name="register" class="org.action.ZUserAction" method="register">
+			<result type="json" name="success">
+				<param name="root">result</param>
+			</result>
+		</action>
+		
+		<!-- alarm -->
+		<action name="ackAlarm" class="org.action.ZAlarmAction" method="ackAlarm">
+			<result type="json" name="success">
+				<param name="root">result</param>
+			</result>
+		</action>
+		<action name="getAlarmList" class="org.action.ZAlarmAction" method="getAlarmList">
+			<result type="json" name="success">
+				<param name="root">result</param>
+			</result>
+		</action>
+		<!-- Exception -->
+		<action name="ackException" class="org.action.ZExceptionAction" method="ackException">
+			<result type="json" name="success">
+				<param name="root">result</param>
+			</result>
+		</action>
+		<action name="getExceptionList" class="org.action.ZExceptionAction" method="getExceptionList">
+			<result type="json" name="success">
+				<param name="root">result</param>
+			</result>
+		</action>
+		<!-- Exception -->
+	</package>
+	
+	<package name="ajax_nolog" extends="json-default" namespace="/">
+		<action name="getLogList" class="org.action.ZLogAction" method="getLogList">
+			<result type="json" name="success">
+				<param name="root">result</param>
+			</result>
+		</action>
+	</package>
+</struts>
