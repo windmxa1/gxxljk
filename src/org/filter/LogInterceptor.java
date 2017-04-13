@@ -2,8 +2,6 @@ package org.filter;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -23,30 +21,43 @@ public class LogInterceptor extends AbstractInterceptor {
 
 	@Override
 	public String intercept(ActionInvocation invocation) throws Exception {
-		//获取接口名
+		// 获取接口名
 		String actionName = invocation.getInvocationContext().getName();
-		
+
 		HttpServletRequest request = ServletActionContext.getRequest();
-		String pName = request.getContextPath();	//获取项目名
-		
-		System.out.println(pName+"--"+new SimpleDateFormat("yyyy/MM/dd/HH:mm:ss").format(new Date())+"--"+actionName);
-		
+		String pName = request.getContextPath(); // 获取项目名
+
+		System.out.println(pName
+				+ "--"
+				+ new SimpleDateFormat("yyyy/MM/dd/HH:mm:ss")
+						.format(new Date()) + "--" + actionName);
+
 		ZLogDao lDao = new ZLogDaoImp();
-		if(actionName.equals("login")||actionName.equals("register")){
+		if (actionName.equals("login") || actionName.equals("register")) {
 			String username = request.getParameter("username");
-			ZLog log = new ZLog(username, actionName, new Date().getTime()/1000);
+			ZLog log = new ZLog(username, actionName,
+					new Date().getTime() / 1000);
 			lDao.addLog(log);
 
 			return invocation.invoke();
-		}else{
-			ZUser u =(ZUser) request.getSession().getAttribute("user");
-			if(u!=null){	//已登录
-				ZLog log  = new ZLog(u.getUsername(), actionName, new Date().getTime()/1000);
-				lDao.addLog(log);
+		} else {
+			ZUser u = (ZUser) request.getSession().getAttribute("user");
+			if (u != null) { // 已登录
+				if (actionName.equals("ackAlarm")
+						|| actionName.equals("ackException")) {
+					String dataId = request.getParameter("id");
+					ZLog log = new ZLog(u.getUsername(),actionName,new Date().getTime()/1000,Long.parseLong(dataId));
+					lDao.addLog(log);
+				} else {
+					ZLog log = new ZLog(u.getUsername(), actionName,
+							new Date().getTime() / 1000);
+					lDao.addLog(log);
+				}
 				return invocation.invoke();
-			}else{			//未登录
-				ActionContext.getContext().put("result", R.getJson(-999, "未登录", false));
-				
+			} else { // 未登录
+				ActionContext.getContext().put("result",
+						R.getJson(-999, "未登录", false));
+
 				return Action.ERROR;
 			}
 		}

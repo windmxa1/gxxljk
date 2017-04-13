@@ -12,6 +12,7 @@ public class ZException implements java.io.Serializable {
 	private Long time;
 	private Integer ack;
 	private String description;
+	private String host;
 
 	// Constructors
 
@@ -20,10 +21,11 @@ public class ZException implements java.io.Serializable {
 	}
 
 	/** full constructor */
-	public ZException(Long time, Integer ack, String description) {
+	public ZException(Long time, Integer ack, String description, String host) {
 		this.time = time;
 		this.ack = ack;
 		this.description = description;
+		this.host = host;
 	}
 
 	// Property accessors
@@ -58,6 +60,14 @@ public class ZException implements java.io.Serializable {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public String getHost() {
+		return this.host;
+	}
+
+	public void setHost(String host) {
+		this.host = host;
 	}
 
 }

@@ -12,6 +12,7 @@ public class VExceptionId implements java.io.Serializable {
 	private Long time;
 	private Integer ack;
 	private String description;
+	private String host;
 	private String vtime;
 
 	// Constructors
@@ -21,20 +22,23 @@ public class VExceptionId implements java.io.Serializable {
 	}
 
 	/** minimal constructor */
-	public VExceptionId(Long id, Long time, Integer ack, String description) {
+	public VExceptionId(Long id, Long time, Integer ack, String description,
+			String host) {
 		this.id = id;
 		this.time = time;
 		this.ack = ack;
 		this.description = description;
+		this.host = host;
 	}
 
 	/** full constructor */
 	public VExceptionId(Long id, Long time, Integer ack, String description,
-			String vtime) {
+			String host, String vtime) {
 		this.id = id;
 		this.time = time;
 		this.ack = ack;
 		this.description = description;
+		this.host = host;
 		this.vtime = vtime;
 	}
 
@@ -72,6 +76,14 @@ public class VExceptionId implements java.io.Serializable {
 		this.description = description;
 	}
 
+	public String getHost() {
+		return this.host;
+	}
+
+	public void setHost(String host) {
+		this.host = host;
+	}
+
 	public String getVtime() {
 		return this.vtime;
 	}
@@ -102,6 +114,9 @@ public class VExceptionId implements java.io.Serializable {
 						.getDescription() != null
 						&& castOther.getDescription() != null && this
 						.getDescription().equals(castOther.getDescription())))
+				&& ((this.getHost() == castOther.getHost()) || (this.getHost() != null
+						&& castOther.getHost() != null && this.getHost()
+						.equals(castOther.getHost())))
 				&& ((this.getVtime() == castOther.getVtime()) || (this
 						.getVtime() != null && castOther.getVtime() != null && this
 						.getVtime().equals(castOther.getVtime())));
@@ -119,6 +134,8 @@ public class VExceptionId implements java.io.Serializable {
 				* result
 				+ (getDescription() == null ? 0 : this.getDescription()
 						.hashCode());
+		result = 37 * result
+				+ (getHost() == null ? 0 : this.getHost().hashCode());
 		result = 37 * result
 				+ (getVtime() == null ? 0 : this.getVtime().hashCode());
 		return result;

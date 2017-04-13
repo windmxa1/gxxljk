@@ -1,8 +1,10 @@
 package org.dao;
 
 import java.util.List;
+import java.util.Set;
 
 import org.model.ZAlarm;
+import org.view.VAlarmId;
 
 public interface ZAlarmDao {
 	/**
@@ -32,16 +34,21 @@ public interface ZAlarmDao {
 
 	/**
 	 * 4.获取总数
-	 * 
+	 * @param type 0返回未确认，1返回已确认，2返回所有
 	 * @return
 	 */
-	public long getCount();
+	public long getCount(Integer type);
 
 	/**
 	 * 5.返回未确认的报警记录数
 	 */
 	public long getUnACKAlarmCount();
-
+	/**
+	 * 6.获取未确认报警的id数组
+	 */
+	public Set<Long> getUnACKAlarmIds(); 
+	
+	
 	/**
 	 * 6.获取所有未确认的告警列表
 	 */
@@ -50,11 +57,15 @@ public interface ZAlarmDao {
 	/**
 	 * 7.获取指定时间段的数据
 	 */
-	public List getAlarmList(Integer start, Integer limit, Integer type,
+	public List<VAlarmId> getAlarmList(Integer start, Integer limit, Integer type,
 			String start_time, String end_time);
 
 	/**
 	 * 8.获取指定时间段的数据的数目
 	 */
 	public Long getAlarmCount(Integer type, String start_time, String end_time);
+	/**
+	 * 9.删除指定时间段的数据
+	 */
+	public boolean deleteAlarm(Long start_clock, Long end_clock);
 }

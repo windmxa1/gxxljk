@@ -1,7 +1,9 @@
 package org.dao.imp;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.dao.ZExceptionDao;
 import org.hibernate.Query;
@@ -11,6 +13,7 @@ import org.hibernate.Transaction;
 import org.model.ZException;
 import org.util.HibernateSessionFactory;
 import org.view.VException;
+import org.view.VExceptionId;
 
 public class ZExceptionDaoImp implements ZExceptionDao {
 
@@ -20,7 +23,7 @@ public class ZExceptionDaoImp implements ZExceptionDao {
 			Session session = HibernateSessionFactory.getSession();
 			Transaction ts = session.beginTransaction();
 
-			ZException exception = new ZException(e.getTime(), e.getAck(),e.getDescription());
+			ZException exception = new ZException(e.getTime(), e.getAck(),e.getDescription(),e.getHost());
 			session.save(exception);
 			ts.commit();
 			return true;
@@ -68,10 +71,14 @@ public class ZExceptionDaoImp implements ZExceptionDao {
 			sqlQuery.addEntity(VException.class);
 			if (start == null)
 				start = 0;
-			if (limit == null)
+			if (limit == null) {
 				limit = 15;
+				sqlQuery.setMaxResults(limit);
+			} else if (limit == -1) {
+			} else {
+				sqlQuery.setMaxResults(limit);
+			}
 			sqlQuery.setFirstResult(start);
-			sqlQuery.setMaxResults(limit);
 
 			List<VException> li = sqlQuery.list();
 			List list = new ArrayList<>();
@@ -88,10 +95,24 @@ public class ZExceptionDaoImp implements ZExceptionDao {
 	}
 
 	@Override
-	public long getCount() {
+	public long getCount(Integer type) {
 		try {
 			Session session = HibernateSessionFactory.getSession();
-			Query query = session.createQuery("select count(id) from ZException");
+			String sql = "";
+			switch (type) {
+			case 0:
+				sql = "select count(id) from ZException where ack=0 ";
+				break;
+			case 1:
+				sql = "select count(id) from ZException where ack=1 ";
+				break;
+			case 2:
+				sql = "select count(id) from ZException ";
+				break;
+			default:
+				break;
+			}
+			Query query = session.createQuery(sql);
 			query.setMaxResults(1);
 			Long count = (Long) query.uniqueResult();
 			return count;
@@ -137,6 +158,130 @@ public class ZExceptionDaoImp implements ZExceptionDao {
 				list.add(a.getId());
 			}
 			return list;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		} finally {
+			HibernateSessionFactory.closeSession();
+		}
+	}
+
+	@Override
+	public List<VExceptionId> getExceptionList(Integer start, Integer limit,
+			Integer type, String start_time, String end_time) {
+		try {
+			Session session = HibernateSessionFactory.getSession();
+			// Transaction ts = session.beginTransaction();
+			String sql = "";
+			switch (type) {
+			case 0:
+				sql = "select * from v_exception where ack=0 and vtime>? and vtime<? order by id desc";
+				break;
+			case 1:
+				sql = "select * from v_exception where ack=1 and vtime>? and vtime<?  order by id desc";
+				break;
+			case 2:
+				sql = "select * from v_exception where vtime >  ? and vtime<?  order by id desc";
+				break;
+			default:
+				break;
+			}
+			SQLQuery sqlQuery = session.createSQLQuery(sql);
+			sqlQuery.addEntity(VException.class);
+			sqlQuery.setParameter(0, start_time);
+			sqlQuery.setParameter(1, end_time);
+			if (start == null)
+				start = 0;
+			if (limit == null) {
+				limit = 15;
+				sqlQuery.setMaxResults(limit);
+			} else if (limit == -1) {
+			} else {
+				sqlQuery.setMaxResults(limit);
+			}
+			sqlQuery.setFirstResult(start);
+
+			List<VException> li = sqlQuery.list();
+			List list = new ArrayList<>();
+			for (VException a : li) {
+				list.add(a.getId());
+			}
+			return list;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		} finally {
+			HibernateSessionFactory.closeSession();
+		}
+	}
+
+	@Override
+	public Long getExceptionCount(Integer type, String start_time,
+			String end_time) {
+		try {
+			Session session = HibernateSessionFactory.getSession();
+
+			String sql = "";
+			switch (type) {
+			case 0:
+				sql = "select count(*) from VException v where v.id.ack=0 and v.id.vtime>? and v.id.vtime<? order by id desc";
+				break;
+			case 1:
+				sql = "select count(*) from VException v where v.id.ack=1 and v.id.vtime>? and v.id.vtime<?  order by id desc";
+				break;
+			case 2:
+				sql = "select count(*) from VException where id.vtime>? and id.vtime<?  order by id desc";
+				break;
+			default:
+				break;
+			}
+			Query query = session.createQuery(sql);
+			query.setParameter(0, start_time);
+			query.setParameter(1, end_time);
+			query.setMaxResults(1);
+			Long count = (Long) query.uniqueResult();
+			return count;
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			return 0L;
+		} finally {
+			HibernateSessionFactory.closeSession();
+		}
+	}
+
+	@Override
+	public boolean deleteException(Long start_clock, Long end_clock) {
+		try {
+			Session session = HibernateSessionFactory.getSession();
+			Transaction ts= session.beginTransaction();
+			String sql = "delete from ZException where time>? and time<?";
+			Query query = session.createQuery(sql);
+			query.setParameter(0, start_clock);
+			query.setParameter(1, end_clock);
+			query.executeUpdate();
+			ts.commit();
+			
+			return true;
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			return false;
+		}finally{
+			HibernateSessionFactory.closeSession();
+		}
+	}
+
+	@Override
+	public Set<Long> getUnACKExceptionIds() {
+		try {
+			Session session = HibernateSessionFactory.getSession();
+			String sql = "select id from ZException where ack = 0";
+			Query query = session.createQuery(sql);
+			List<Long> list = (List<Long>) query.list();
+			Set<Long> set = new HashSet<>();
+			set.addAll(list);
+			return set;
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;

@@ -19,7 +19,7 @@
 			</result>
 		</global-results>
 	</package>
-
+	<constant name="struts.action.excludePattern" value="/ws/.*,ws://.*"></constant>
 	<package name="ajax" extends="json-default,global" namespace="/">
 		<action name="login" class="org.action.ZUserAction" method="login">
 			<result type="json" name="success">
@@ -31,34 +31,124 @@
 				<param name="root">result</param>
 			</result>
 		</action>
-		
+		<action name="getGxHostList" class="org.action.ZGxHostAction"
+			method="getGxHostList">
+			<result type="json" name="success">
+				<param name="root">result</param>
+			</result>
+		</action>
+		<action name="test" class="org.action.ZGxHostAction"
+			method="test">
+			<result type="json" name="success">
+				<param name="root">result</param>
+			</result>
+		</action>
+
+
 		<!-- alarm -->
 		<action name="ackAlarm" class="org.action.ZAlarmAction" method="ackAlarm">
 			<result type="json" name="success">
 				<param name="root">result</param>
 			</result>
 		</action>
-		<action name="getAlarmList" class="org.action.ZAlarmAction" method="getAlarmList">
+		<action name="getAlarmList" class="org.action.ZAlarmAction"
+			method="getAlarmList">
+			<result type="json" name="success">
+				<param name="root">result</param>
+			</result>
+		</action>
+
+		<action name="deleteAlarm" class="org.action.ZAlarmAction"
+			method="deleteAlarm">
+			<result type="json" name="success">
+				<param name="root">result</param>
+			</result>
+		</action>
+		<action name="getAlarmPDF" class="org.action.ZAlarmAction"
+			method="getAlarmPDF">
+			<result type="json" name="success">
+				<param name="root">result</param>
+			</result>
+		</action>
+
+		<!-- Exception -->
+		<action name="ackException" class="org.action.ZExceptionAction"
+			method="ackException">
+			<result type="json" name="success">
+				<param name="root">result</param>
+			</result>
+		</action>
+		<action name="getExceptionList" class="org.action.ZExceptionAction"
+			method="getExceptionList">
+			<result type="json" name="success">
+				<param name="root">result</param>
+			</result>
+		</action>
+
+		<action name="deleteException" class="org.action.ZExceptionAction"
+			method="deleteException">
+			<result type="json" name="success">
+				<param name="root">result</param>
+			</result>
+		</action>
+		<action name="getExceptionPDF" class="org.action.ZExceptionAction"
+			method="getExceptionPDF">
 			<result type="json" name="success">
 				<param name="root">result</param>
 			</result>
 		</action>
 		<!-- Exception -->
-		<action name="ackException" class="org.action.ZExceptionAction" method="ackException">
+		<!-- Log -->
+		<action name="deleteLog" class="org.action.ZLogAction" method="deleteLog">
 			<result type="json" name="success">
 				<param name="root">result</param>
 			</result>
 		</action>
-		<action name="getExceptionList" class="org.action.ZExceptionAction" method="getExceptionList">
+		<action name="getLogPDF" class="org.action.ZLogAction" method="getLogPDF">
 			<result type="json" name="success">
 				<param name="root">result</param>
 			</result>
 		</action>
-		<!-- Exception -->
+		<!-- Log -->
 	</package>
-	
+
 	<package name="ajax_nolog" extends="json-default" namespace="/">
+		<action name="logout" class="org.action.ZUserAction" method="logout">
+			<result type="json" name="success">
+				<param name="root">result</param>
+			</result>
+		</action>
 		<action name="getLogList" class="org.action.ZLogAction" method="getLogList">
+			<result type="json" name="success">
+				<param name="root">result</param>
+			</result>
+		</action>
+		<action name="checkAlarm" class="org.action.ZAlarmAction"
+			method="checkAlarm">
+			<result type="json" name="success">
+				<param name="root">result</param>
+			</result>
+		</action>
+		<action name="getLatestAlarm" class="org.action.ZAlarmAction"
+			method="getLatestAlarm">
+			<result type="json" name="success">
+				<param name="root">result</param>
+			</result>
+		</action>
+		<action name="checkException" class="org.action.ZExceptionAction"
+			method="checkException">
+			<result type="json" name="success">
+				<param name="root">result</param>
+			</result>
+		</action>
+		<action name="getLatestException" class="org.action.ZExceptionAction"
+			method="getLatestException">
+			<result type="json" name="success">
+				<param name="root">result</param>
+			</result>
+		</action>
+		<action name="clearSession" class="org.action.ZAlarmAction"
+			method="clearSession">
 			<result type="json" name="success">
 				<param name="root">result</param>
 			</result>

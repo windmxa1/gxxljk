@@ -15,6 +15,7 @@ public class VAlarmId implements java.io.Serializable {
 	private String level;
 	private Integer ack;
 	private String lastTime;
+	private String host;
 	private String vtime;
 
 	// Constructors
@@ -25,7 +26,8 @@ public class VAlarmId implements java.io.Serializable {
 
 	/** minimal constructor */
 	public VAlarmId(Long id, Long occurTime, String distance,
-			String description, String level, Integer ack, String lastTime) {
+			String description, String level, Integer ack, String lastTime,
+			String host) {
 		this.id = id;
 		this.occurTime = occurTime;
 		this.distance = distance;
@@ -33,12 +35,13 @@ public class VAlarmId implements java.io.Serializable {
 		this.level = level;
 		this.ack = ack;
 		this.lastTime = lastTime;
+		this.host = host;
 	}
 
 	/** full constructor */
 	public VAlarmId(Long id, Long occurTime, String distance,
 			String description, String level, Integer ack, String lastTime,
-			String vtime) {
+			String host, String vtime) {
 		this.id = id;
 		this.occurTime = occurTime;
 		this.distance = distance;
@@ -46,6 +49,7 @@ public class VAlarmId implements java.io.Serializable {
 		this.level = level;
 		this.ack = ack;
 		this.lastTime = lastTime;
+		this.host = host;
 		this.vtime = vtime;
 	}
 
@@ -107,6 +111,14 @@ public class VAlarmId implements java.io.Serializable {
 		this.lastTime = lastTime;
 	}
 
+	public String getHost() {
+		return this.host;
+	}
+
+	public void setHost(String host) {
+		this.host = host;
+	}
+
 	public String getVtime() {
 		return this.vtime;
 	}
@@ -149,6 +161,9 @@ public class VAlarmId implements java.io.Serializable {
 						.getLastTime() != null
 						&& castOther.getLastTime() != null && this
 						.getLastTime().equals(castOther.getLastTime())))
+				&& ((this.getHost() == castOther.getHost()) || (this.getHost() != null
+						&& castOther.getHost() != null && this.getHost()
+						.equals(castOther.getHost())))
 				&& ((this.getVtime() == castOther.getVtime()) || (this
 						.getVtime() != null && castOther.getVtime() != null && this
 						.getVtime().equals(castOther.getVtime())));
@@ -172,6 +187,8 @@ public class VAlarmId implements java.io.Serializable {
 				+ (getAck() == null ? 0 : this.getAck().hashCode());
 		result = 37 * result
 				+ (getLastTime() == null ? 0 : this.getLastTime().hashCode());
+		result = 37 * result
+				+ (getHost() == null ? 0 : this.getHost().hashCode());
 		result = 37 * result
 				+ (getVtime() == null ? 0 : this.getVtime().hashCode());
 		return result;

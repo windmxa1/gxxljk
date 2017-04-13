@@ -1,7 +1,9 @@
 package org.dao.imp;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.dao.ZAlarmDao;
 import org.hibernate.Query;
@@ -26,7 +28,7 @@ public class ZAlarmDaoImp implements ZAlarmDao {
 			alarm.setLevel(a.getLevel());
 			alarm.setOccurTime(a.getOccurTime());
 			alarm.setLastTime(a.getLastTime());
-
+			alarm.setHost(a.getHost());
 			session.save(alarm);
 			ts.commit();
 			return true;
@@ -80,10 +82,14 @@ public class ZAlarmDaoImp implements ZAlarmDao {
 			sqlQuery.addEntity(VAlarm.class);
 			if (start == null)
 				start = 0;
-			if (limit == null)
+			if (limit == null) {
 				limit = 15;
+				sqlQuery.setMaxResults(limit);
+			} else if (limit == -1) {
+			} else {
+				sqlQuery.setMaxResults(limit);
+			}
 			sqlQuery.setFirstResult(start);
-			sqlQuery.setMaxResults(limit);
 
 			List<VAlarm> li = sqlQuery.list();
 			List list = new ArrayList<>();
@@ -100,11 +106,24 @@ public class ZAlarmDaoImp implements ZAlarmDao {
 	}
 
 	@Override
-	public long getCount() {
+	public long getCount(Integer type) {
 		try {
 			Session session = HibernateSessionFactory.getSession();
-
-			Query query = session.createQuery("select count(id) from ZAlarm");
+			String sql = "";
+			switch (type) {
+			case 0:
+				sql = "select count(id) from ZAlarm where ack=0 ";
+				break;
+			case 1:
+				sql = "select count(id) from ZAlarm where ack=1 ";
+				break;
+			case 2:
+				sql = "select count(id) from ZAlarm ";
+				break;
+			default:
+				break;
+			}
+			Query query = session.createQuery(sql);
 			query.setMaxResults(1);
 			Long count = (Long) query.uniqueResult();
 			return count;
@@ -173,7 +192,7 @@ public class ZAlarmDaoImp implements ZAlarmDao {
 				sql = "select * from v_alarm where ack=1 and vtime>? and vtime<?  order by id desc";
 				break;
 			case 2:
-				sql = "select * from v_alarm where vtime>? and vtime<?  order by id desc";
+				sql = "select * from v_alarm where vtime >  ? and vtime<?  order by id desc";
 				break;
 			default:
 				break;
@@ -184,10 +203,14 @@ public class ZAlarmDaoImp implements ZAlarmDao {
 			sqlQuery.setParameter(1, end_time);
 			if (start == null)
 				start = 0;
-			if (limit == null)
+			if (limit == null) {
 				limit = 15;
+				sqlQuery.setMaxResults(limit);
+			} else if (limit == -1) {
+			} else {
+				sqlQuery.setMaxResults(limit);
+			}
 			sqlQuery.setFirstResult(start);
-			sqlQuery.setMaxResults(limit);
 
 			List<VAlarm> li = sqlQuery.list();
 			List list = new ArrayList<>();
@@ -207,22 +230,22 @@ public class ZAlarmDaoImp implements ZAlarmDao {
 	public Long getAlarmCount(Integer type, String start_time, String end_time) {
 		try {
 			Session session = HibernateSessionFactory.getSession();
-			
+
 			String sql = "";
 			switch (type) {
 			case 0:
-				sql = "select count(id) from v_alarm where ack=0 and vtime>? and vtime<? order by id desc";
+				sql = "select count(*) from VAlarm v where v.id.ack=0 and v.id.vtime>? and v.id.vtime<? order by id desc";
 				break;
 			case 1:
-				sql = "select count(id) from v_alarm where ack=1 and vtime>? and vtime<?  order by id desc";
+				sql = "select count(*) from VAlarm v where v.id.ack=1 and v.id.vtime>? and v.id.vtime<?  order by id desc";
 				break;
 			case 2:
-				sql = "select count(id) from v_alarm where vtime>? and vtime<?  order by id desc";
+				sql = "select count(*) from VAlarm where id.vtime>? and id.vtime<?  order by id desc";
 				break;
 			default:
 				break;
 			}
-			Query query = session.createSQLQuery(sql);
+			Query query = session.createQuery(sql);
 			query.setParameter(0, start_time);
 			query.setParameter(1, end_time);
 			query.setMaxResults(1);
@@ -230,9 +253,49 @@ public class ZAlarmDaoImp implements ZAlarmDao {
 			return count;
 		} catch (Exception e) {
 			// TODO: handle exception
+			e.printStackTrace();
+			return 0L;
+		} finally {
+			HibernateSessionFactory.closeSession();
+		}
+	}
+
+	@Override
+	public boolean deleteAlarm(Long start_clock, Long end_clock) {
+		try {
+			Session session = HibernateSessionFactory.getSession();
+			Transaction ts = session.beginTransaction();
+			String sql = "delete from ZAlarm where occurTime>? and occurTime<?";
+			Query query = session.createQuery(sql);
+			query.setParameter(0, start_clock);
+			query.setParameter(1, end_clock);
+			query.executeUpdate();
+			ts.commit();
+
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		} finally {
+			HibernateSessionFactory.closeSession();
+		}
+	}
+
+	@Override
+	public Set<Long> getUnACKAlarmIds() {
+		try {
+			Session session = HibernateSessionFactory.getSession();
+			String sql = "select id from ZAlarm where ack = 0";
+			Query query = session.createQuery(sql);
+			List<Long> list = (List<Long>) query.list();
+			Set<Long> set = new HashSet<>();
+			set.addAll(list);
+			return set;
+		} catch (Exception e) {
+			e.printStackTrace();
 			return null;
-		}finally{
-			
+		} finally {
+			HibernateSessionFactory.closeSession();
 		}
 	}
 

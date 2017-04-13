@@ -28,6 +28,9 @@
             <key-property name="lastTime" type="java.lang.String">
                 <column name="last_time" length="20" />
             </key-property>
+            <key-property name="host" type="java.lang.String">
+                <column name="host" length="20" />
+            </key-property>
             <key-property name="vtime" type="java.lang.String">
                 <column name="vtime" length="24" />
             </key-property>

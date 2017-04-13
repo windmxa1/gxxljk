@@ -15,6 +15,7 @@ public class ZAlarm implements java.io.Serializable {
 	private String level;
 	private Integer ack;
 	private String lastTime;
+	private String host;
 
 	// Constructors
 
@@ -24,13 +25,14 @@ public class ZAlarm implements java.io.Serializable {
 
 	/** full constructor */
 	public ZAlarm(Long occurTime, String distance, String description,
-			String level, Integer ack, String lastTime) {
+			String level, Integer ack, String lastTime, String host) {
 		this.occurTime = occurTime;
 		this.distance = distance;
 		this.description = description;
 		this.level = level;
 		this.ack = ack;
 		this.lastTime = lastTime;
+		this.host = host;
 	}
 
 	// Property accessors
@@ -89,6 +91,14 @@ public class ZAlarm implements java.io.Serializable {
 
 	public void setLastTime(String lastTime) {
 		this.lastTime = lastTime;
+	}
+
+	public String getHost() {
+		return this.host;
+	}
+
+	public void setHost(String host) {
+		this.host = host;
 	}
 
 }

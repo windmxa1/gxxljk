@@ -19,5 +19,8 @@
         <property name="description" type="java.lang.String">
             <column name="description" not-null="true" />
         </property>
+        <property name="host" type="java.lang.String">
+            <column name="host" length="20" not-null="true" />
+        </property>
     </class>
 </hibernate-mapping>

@@ -44,5 +44,22 @@ public class ZUserDaoImp implements ZUserDao {
 			HibernateSessionFactory.closeSession();
 		}
 	}
-
+	
+	@Override
+	public ZUser getUser(String username) {
+		try {
+			Session session = HibernateSessionFactory.getSession();
+			Query query = session
+					.createQuery("from ZUser where username=?");
+			query.setParameter(0, username);
+			query.setMaxResults(1);
+			ZUser u = (ZUser) query.uniqueResult();
+			return u;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ZUser();
+		} finally {
+			HibernateSessionFactory.closeSession();
+		}
+	}
 }

@@ -18,4 +18,10 @@ public interface ZUserDao {
 	 * @return
 	 */
 	public boolean addUser(String username,String password);
+	/**
+	 * 3.检验用户名
+	 * @param username
+	 * @return
+	 */
+	public ZUser getUser(String username);
 }

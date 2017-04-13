@@ -25,6 +25,8 @@
 	<mapping resource="org/view/VLog.hbm.xml" />
 	<mapping resource="org/view/VException.hbm.xml" />
 	<mapping resource="org/model/ZException.hbm.xml" />
+	<mapping resource="org/model/ZConnectCtl.hbm.xml" />
+	<mapping resource="org/model/ZGxHost.hbm.xml" />
 </session-factory>
 
 </hibernate-configuration>

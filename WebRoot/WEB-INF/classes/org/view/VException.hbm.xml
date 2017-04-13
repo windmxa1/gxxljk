@@ -19,6 +19,9 @@
             <key-property name="description" type="java.lang.String">
                 <column name="description" />
             </key-property>
+            <key-property name="host" type="java.lang.String">
+                <column name="host" length="20" />
+            </key-property>
             <key-property name="vtime" type="java.lang.String">
                 <column name="vtime" length="24" />
             </key-property>
