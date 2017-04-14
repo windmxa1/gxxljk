@@ -17,10 +17,13 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 
+import org.dao.ZExceptionDao;
 import org.dao.ZGxHostDao;
+import org.dao.imp.ZExceptionDaoImp;
 import org.dao.imp.ZGxHostDaoImp;
 import org.model.AlarmBean;
 import org.model.HostBean;
+import org.model.ZException;
 import org.model.ZGxHost;
 import org.tools.JsonUtils;
 
@@ -76,7 +79,18 @@ class SocketThread extends Thread {
 
 	public void run() {
 		System.out.println("running");
+		connect();
+	}
+
+	public void connect() {
 		try {
+			// 设置3秒延时,作为重新连接的缓冲
+			Thread.sleep(3 * 1000);
+			// 防止无用线程的出现，需要先检测数据表是否存在这条光纤，以防已删除光纤还继续进行无用的重连操作
+			ZGxHostDao gDao = new ZGxHostDaoImp();
+			if (gDao.getGxHost(host) == null) {
+				return;
+			}
 			Socket socket = new Socket(host, Integer.parseInt(port));
 			DataOutputStream out = new DataOutputStream(
 					socket.getOutputStream());
@@ -121,30 +135,37 @@ class SocketThread extends Thread {
 					}
 				}
 				if (result.contains("\"command_code\":\"5000002\"")) {// 将接收到的波形数据实时传输给前端
+					System.out.println(result);
 					String pattern = "\"data\":.*]";
 					Pattern r = Pattern.compile(pattern);
 					Matcher m = r.matcher(result);
 					m.find();
 					String data = m.group().toString().replace("\"data\":", "");
 					ObjectMapper mapper = JsonUtils.getInstance();
-					ZGxHostDao gDao = new ZGxHostDaoImp();
 					ZGxHost zGxHost = gDao.getGxHost(host);
 					Map<String, Object> map = new HashMap<String, Object>();
-					if(zGxHost!=null){
+					if (zGxHost != null) {
 						map.put("name", zGxHost.getName());
-					}else {
+					} else {
 						map.put("name", "该线路未命名");
 					}
 					List<Integer> list = mapper.readValue(data, List.class);
 					map.put("list", list);
-					session.getBasicRemote().sendText(mapper.writeValueAsString(map));
+					session.getBasicRemote().sendText(
+							mapper.writeValueAsString(map));
 				}
 				result = "";
 			}
 		} catch (ConnectException e) {
-			System.out.println("连接异常");
+			System.out.println("连接异常,3秒后重连");
+			connect();
 		} catch (IOException e) {
-			System.out.println("IO异常");
+			System.out.println("IO异常，3秒后重连");
+			connect();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			System.out.println("中断异常");
 		}
 
 	}

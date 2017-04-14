@@ -28,7 +28,10 @@
 		webSocket.onmessage = function(event) {
 			onMessage(event)
 		};
-
+		window.onbeforeunload = function(){
+			alert("closing ws..");
+			webSocket.close;
+		}
 		function onMessage(event) {
 			var result = JSON.parse(event.data);
 			//alert(result.list);
@@ -74,7 +77,8 @@
 		}
 
 		function onOpen(event) {
-			//document.getElementById('messages').innerHTML = 'Connection established';
+			webSocket.send('{"host":"192.168.1.101","port":"6179"}');
+			return false;
 		}
 
 		function onError(event) {
@@ -83,13 +87,6 @@
 			alert(event.data);
 		}
 
-		function start() {
-			webSocket.send('{"host":"192.168.1.101","port":"6179"}');
-			return false;
-		}
-		$(function() {
-			start();
-		});
 	</script>
 </body>
 
