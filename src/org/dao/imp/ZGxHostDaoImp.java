@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.dao.ZGxHostDao;
 import org.hibernate.Query;
+import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.model.ZGxHost;
@@ -137,6 +138,22 @@ public class ZGxHostDaoImp implements ZGxHostDao {
 			e.printStackTrace();
 			return null;
 		} finally {
+			HibernateSessionFactory.closeSession();
+		}
+	}
+
+	@Override
+	public List getBelongList() {
+		try {
+			Session session = HibernateSessionFactory.getSession();
+			SQLQuery sqlQuery = session.createSQLQuery("select belong from z_gx_host");
+			List<String> list = sqlQuery.list();
+			
+			return list;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}finally{
 			HibernateSessionFactory.closeSession();
 		}
 	}

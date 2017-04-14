@@ -1,14 +1,21 @@
 package org.action;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
 import org.apache.struts2.ServletActionContext;
+import org.dao.ZAuthorityDao;
+import org.dao.ZRoleDao;
 import org.dao.ZUserDao;
+import org.dao.imp.ZAuthorityDaoImp;
+import org.dao.imp.ZRoleDaoImp;
 import org.dao.imp.ZUserDaoImp;
 import org.model.ZUser;
 import org.tools.R;
+import org.view.VRaId;
+import org.view.VUrId;
 
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
@@ -17,18 +24,25 @@ public class ZUserAction extends ActionSupport {
 	private Long id;
 	private String username;
 	private String password;
+	private String belong;	//register时传过来的所属分局
+	private String role;	//注册时传过来的角色
 
 	private Object result;
 
 	public String login() {
 		ZUserDao uDao = new ZUserDaoImp();
+		ZRoleDao rDao = new ZRoleDaoImp();
+		ZAuthorityDao aDao = new ZAuthorityDaoImp();
 		ZUser u = uDao.getUser(username, password);
 
 		if (u != null) {
 			Map<String, Object> session = ActionContext.getContext()
 					.getSession();
 			session.put("user", u);
-
+			
+			long rid = rDao.getRByU(u.getId());
+			List<VRaId> list = aDao.getRAList(rid);
+			session.put("raList", list);
 			result = R.getJson(1, "登录成功", true);
 		} else {
 			result = R.getJson(0, "用户名或密码错误", false);
@@ -39,9 +53,11 @@ public class ZUserAction extends ActionSupport {
 	public String register() throws Exception {
 		ZUserDao uDao = new ZUserDaoImp();
 		if (uDao.getUser(username) == null) {
-			if (uDao.addUser(username, password))
+			if (uDao.addUser(username, password)){
 				result = R.getJson(1, "注册成功", true);
-			else
+				System.out.println("belong:"+belong);
+				System.out.println("role:"+role);
+			}else
 				result = R.getJson(0, "注册失败", false);
 		} else {
 			result = R.getJson(0, "用户名已使用", false);
@@ -61,7 +77,30 @@ public class ZUserAction extends ActionSupport {
 		result = R.getJson(1, "", "");
 		return SUCCESS;
 	}
-
+	
+	public String deleteUser()throws Exception{
+		ZUserDao uDao = new ZUserDaoImp();
+		ZRoleDao rDao = new ZRoleDaoImp();
+		if(uDao.deleteUser(id)){
+			if(rDao.deleteUR(id))
+				result=R.getJson(1, "删除用户成功", true);
+			else
+				result=R.getJson(-1, "删除用户成功，删除用户角色关联失败", false);
+		}else {
+			result=R.getJson(0, "删除用户失败", false);
+		}
+		return SUCCESS;
+	}
+	
+	public String updateUser()throws Exception{
+		ZUserDao uDao = new ZUserDaoImp();
+		if(uDao.updateUser(id, password))
+			result=R.getJson(1, "修改密码成功", true);
+		else
+			result=R.getJson(0, "修改密码失败", false);
+		return SUCCESS;
+	}
+	
 	// ================================================================
 	public Long getId() {
 		return id;

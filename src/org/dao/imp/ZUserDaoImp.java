@@ -62,4 +62,42 @@ public class ZUserDaoImp implements ZUserDao {
 			HibernateSessionFactory.closeSession();
 		}
 	}
+
+	@Override
+	public boolean deleteUser(long id) {
+		try {
+			Session session = HibernateSessionFactory.getSession();
+			Transaction ts=  session.beginTransaction();
+			
+			ZUser u = (ZUser) session.load(ZUser.class, id);
+			session.delete(u);
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}finally{
+			HibernateSessionFactory.closeSession();
+		}
+	}
+
+	@Override
+	public boolean updateUser(long id, String password) {
+		try {
+			Session session = HibernateSessionFactory.getSession();
+			Transaction ts = session.beginTransaction();
+			Query query = session
+					.createQuery("update ZUser u set u.password=? where u.id=?");
+			query.setParameter(0, password);
+			query.setParameter(1, id);
+			query.executeUpdate();
+
+			ts.commit();
+			HibernateSessionFactory.closeSession();
+
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
 }

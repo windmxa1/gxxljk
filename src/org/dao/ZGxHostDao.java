@@ -33,4 +33,9 @@ public interface ZGxHostDao {
 	 * 获取光纤对象
 	 */
 	public ZGxHost getGxHost(String host);
+	/**
+	 * 获取分局列表
+	 * @return
+	 */
+	public List getBelongList();
 }

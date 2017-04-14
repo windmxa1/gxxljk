@@ -78,6 +78,17 @@ public class ZGxHostAction extends ActionSupport {
 		result = R.getJson(1, "设备激活中，请稍后", "");
 		return SUCCESS;
 	}
+	
+	/**
+	 * 获取所有分局信息
+	 * @return
+	 */
+	public String getBelongList(){
+		ZGxHostDao gDao = new ZGxHostDaoImp();
+		List<String> list = gDao.getBelongList();
+		result = R.getJson(1, "", list);
+		return SUCCESS;
+	}
 
 	public Object getResult() {
 		return result;

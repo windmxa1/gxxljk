@@ -1,4 +1,4 @@
-package org.dao;
+package org.model;
 
 import org.model.ZUser;
 
