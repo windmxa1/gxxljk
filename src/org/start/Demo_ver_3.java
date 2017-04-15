@@ -12,5 +12,5 @@ public class Demo_ver_3 {
 		thread4.start();
 		// new Thread(thread4).start();
 
-	}
+	} 
 }

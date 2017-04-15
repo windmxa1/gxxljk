@@ -31,19 +31,21 @@
 				<param name="root">result</param>
 			</result>
 		</action>
-		<action name="getGxHostList" class="org.action.ZGxHostAction"
-			method="getGxHostList">
+		<action name="getURList" class="org.action.ZRoleAction" method="getURList">
 			<result type="json" name="success">
 				<param name="root">result</param>
 			</result>
 		</action>
-		<action name="test" class="org.action.ZGxHostAction"
-			method="test">
+		<action name="deleteUser" class="org.action.ZUserAction" method="deleteUser">
 			<result type="json" name="success">
 				<param name="root">result</param>
 			</result>
 		</action>
-
+		<action name="updateUser" class="org.action.ZUserAction" method="updateUser">
+			<result type="json" name="success">
+				<param name="root">result</param>
+			</result>
+		</action>
 
 		<!-- alarm -->
 		<action name="ackAlarm" class="org.action.ZAlarmAction" method="ackAlarm">
@@ -57,7 +59,6 @@
 				<param name="root">result</param>
 			</result>
 		</action>
-
 		<action name="deleteAlarm" class="org.action.ZAlarmAction"
 			method="deleteAlarm">
 			<result type="json" name="success">
@@ -84,7 +85,6 @@
 				<param name="root">result</param>
 			</result>
 		</action>
-
 		<action name="deleteException" class="org.action.ZExceptionAction"
 			method="deleteException">
 			<result type="json" name="success">
@@ -98,6 +98,7 @@
 			</result>
 		</action>
 		<!-- Exception -->
+		
 		<!-- Log -->
 		<action name="deleteLog" class="org.action.ZLogAction" method="deleteLog">
 			<result type="json" name="success">
@@ -109,16 +110,42 @@
 				<param name="root">result</param>
 			</result>
 		</action>
-		<!-- Log -->
-	</package>
-
-	<package name="ajax_nolog" extends="json-default" namespace="/">
-		<action name="logout" class="org.action.ZUserAction" method="logout">
+		<action name="getLogList" class="org.action.ZLogAction" method="getLogList">
 			<result type="json" name="success">
 				<param name="root">result</param>
 			</result>
 		</action>
-		<action name="getLogList" class="org.action.ZLogAction" method="getLogList">
+		<!-- Log -->
+		
+		<!-- GxHost -->
+		<action name="getGxHostList" class="org.action.ZGxHostAction"
+			method="getGxHostList">
+			<result type="json" name="success">
+				<param name="root">result</param>
+			</result>
+		</action>
+		<action name="addGxHost" class="org.action.ZGxHostAction"
+			method="addGxHost">
+			<result type="json" name="success">
+				<param name="root">result</param>
+			</result>
+		</action>
+		<action name="delGxHost" class="org.action.ZGxHostAction"
+			method="delGxHost">
+			<result type="json" name="success">
+				<param name="root">result</param>
+			</result>
+		</action>
+		<action name="activeGxHost" class="org.action.ZGxHostAction"
+			method="activeGxHost">
+			<result type="json" name="success">
+				<param name="root">result</param>
+			</result>
+		</action>
+	</package>
+
+	<package name="ajax_nolog" extends="json-default" namespace="/">
+		<action name="logout" class="org.action.ZUserAction" method="logout">
 			<result type="json" name="success">
 				<param name="root">result</param>
 			</result>
@@ -149,6 +176,18 @@
 		</action>
 		<action name="clearSession" class="org.action.ZAlarmAction"
 			method="clearSession">
+			<result type="json" name="success">
+				<param name="root">result</param>
+			</result>
+		</action>
+		<action name="getRoleList" class="org.action.ZRoleAction"
+			method="getRoleList">
+			<result type="json" name="success">
+				<param name="root">result</param>
+			</result>
+		</action>
+		<action name="getBelongList" class="org.action.ZGxHostAction"
+			method="getBelongList">
 			<result type="json" name="success">
 				<param name="root">result</param>
 			</result>

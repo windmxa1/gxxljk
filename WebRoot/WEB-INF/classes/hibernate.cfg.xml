@@ -27,6 +27,12 @@
 	<mapping resource="org/model/ZException.hbm.xml" />
 	<mapping resource="org/model/ZConnectCtl.hbm.xml" />
 	<mapping resource="org/model/ZGxHost.hbm.xml" />
+	<mapping resource="org/model/ZAuthority.hbm.xml" />
+	<mapping resource="org/model/ZRole.hbm.xml" />
+	<mapping resource="org/model/ZRoleAuthority.hbm.xml" />
+	<mapping resource="org/model/ZUserRole.hbm.xml" />
+	<mapping resource="org/view/VRa.hbm.xml" />
+	<mapping resource="org/view/VUr.hbm.xml" />
 </session-factory>
 
 </hibernate-configuration>
