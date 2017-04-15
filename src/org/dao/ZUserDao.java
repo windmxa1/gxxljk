@@ -17,7 +17,7 @@ public interface ZUserDao {
 	 * @param password
 	 * @return
 	 */
-	public boolean addUser(String username,String password);
+	public long addUser(String username,String password);
 	/**
 	 * 3.检验用户名
 	 * @param username
@@ -36,4 +36,16 @@ public interface ZUserDao {
 	 * @return
 	 */
 	public boolean updateUser(long id,String password);
+	/**
+	 * 6 删除用户-所属分局的关联关系
+	 * @param uid
+	 */
+	public boolean deleteUB(long uid);
+	/**
+	 * 7 添加用户-所属分局 关联关系
+	 * @param uid
+	 * @param belong
+	 * @return
+	 */
+	public boolean addUB(long uid,String belong);
 }

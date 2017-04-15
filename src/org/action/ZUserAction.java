@@ -52,11 +52,19 @@ public class ZUserAction extends ActionSupport {
 
 	public String register() throws Exception {
 		ZUserDao uDao = new ZUserDaoImp();
+		ZRoleDao rDao = new ZRoleDaoImp();
 		if (uDao.getUser(username) == null) {
-			if (uDao.addUser(username, password)){
-				result = R.getJson(1, "注册成功", true);
-				System.out.println("belong:"+belong);
+			long uid=uDao.addUser(username, password);
+			if (uid!=-1){
 				System.out.println("role:"+role);
+				System.out.println("belong:"+belong);
+				uDao.addUB(uid, belong);
+				rDao.addUR(uid, Long.parseLong(role));
+//				if(role.equals(3))
+//					rDao.addUR(uid, 3);	//普通用户
+//				else if(role.equals(2))
+//					rDao.addUR(uid, 2);	//管理员
+				result = R.getJson(1, "注册成功", true);
 			}else
 				result = R.getJson(0, "注册失败", false);
 		} else {
@@ -82,10 +90,13 @@ public class ZUserAction extends ActionSupport {
 		ZUserDao uDao = new ZUserDaoImp();
 		ZRoleDao rDao = new ZRoleDaoImp();
 		if(uDao.deleteUser(id)){
-			if(rDao.deleteUR(id))
-				result=R.getJson(1, "删除用户成功", true);
-			else
-				result=R.getJson(-1, "删除用户成功，删除用户角色关联失败", false);
+			rDao.deleteUR(id);
+			uDao.deleteUB(id);
+			result=R.getJson(1, "删除用户成功", true);
+//			if(rDao.deleteUR(id))
+//				result=R.getJson(1, "删除用户成功", true);
+//			else
+//				result=R.getJson(-1, "删除用户成功，删除用户角色关联失败", false);
 		}else {
 			result=R.getJson(0, "删除用户失败", false);
 		}
@@ -98,6 +109,14 @@ public class ZUserAction extends ActionSupport {
 			result=R.getJson(1, "修改密码成功", true);
 		else
 			result=R.getJson(0, "修改密码失败", false);
+		return SUCCESS;
+	}
+	
+	public String getSession()throws Exception{
+		Map<String, Object> session = ActionContext.getContext().getSession();
+		ZUser user = (ZUser) session.get("user");
+		user.setPassword("******");
+		result=R.getJson(1, "session", user);
 		return SUCCESS;
 	}
 	
@@ -132,5 +151,21 @@ public class ZUserAction extends ActionSupport {
 
 	public void setResult(Object result) {
 		this.result = result;
+	}
+
+	public String getBelong() {
+		return belong;
+	}
+
+	public void setBelong(String belong) {
+		this.belong = belong;
+	}
+
+	public String getRole() {
+		return role;
+	}
+
+	public void setRole(String role) {
+		this.role = role;
 	}
 }

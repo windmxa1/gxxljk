@@ -36,7 +36,7 @@ public interface ZRoleDao {
 	public boolean deleteUR(long uid);
 	
 	/**
-	 * 5 获取全部角色列表
+	 * 5 获取全部角色列表,用于下拉列表
 	 * @return
 	 */
 	public List<ZRole> getRoleList();
@@ -46,7 +46,7 @@ public interface ZRoleDao {
 	 * @param uid
 	 * @return
 	 */
-	public List<VUrId> getURList();
+	public List<VUrId> getURList(Integer start, Integer limit);
 	
 	/**
 	 * 7 通过用户id获取roel对象
@@ -55,5 +55,10 @@ public interface ZRoleDao {
 	 */
 	public long getRByU(long uid);
 	
+	/**
+	 * 8获取总数用户（作用于ZUser用户）
+	 * @return
+	 */
+	public long getCount();
 //	public boolean updateUR();	//修改关系？
 }

@@ -109,13 +109,27 @@ public class ZRoleDaoImp implements ZRoleDao{
 	}
 
 	@Override
-	public List<VUrId> getURList() {
+	public List<VUrId> getURList(Integer start, Integer limit) {
 		try {
 			Session session = HibernateSessionFactory.getSession();
 			Transaction ts = session.beginTransaction();
 			
 			SQLQuery sqlQuery = session.createSQLQuery("select * from v_ur");
 			sqlQuery.addEntity(VUr.class);
+			
+			if(start==null){
+				start=0;
+			}
+			if(limit==null){
+				limit=15;
+				sqlQuery.setMaxResults(limit);
+			}else if(limit==-1){
+				
+			}else{
+				sqlQuery.setMaxResults(limit);
+			}
+			sqlQuery.setFirstResult(start);
+			
 			List<VUr> list = sqlQuery.list();
 			List<VUrId> li = new ArrayList<>();
 			for(VUr v:list){
@@ -151,6 +165,23 @@ public class ZRoleDaoImp implements ZRoleDao{
 			e.printStackTrace();
 			return -1;
 		}finally{
+			HibernateSessionFactory.closeSession();
+		}
+	}
+
+	@Override
+	public long getCount() {
+		try {
+			Session session = HibernateSessionFactory.getSession();
+
+			Query query = session.createQuery("select count(id) from ZUser");
+			query.setMaxResults(1);
+			Long count = (Long) query.uniqueResult();
+			return count;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return -1;
+		} finally {
 			HibernateSessionFactory.closeSession();
 		}
 	}

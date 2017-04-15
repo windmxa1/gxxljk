@@ -2,9 +2,12 @@ package org.dao.imp;
 
 import org.dao.ZUserDao;
 import org.hibernate.Query;
+import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.model.ZUser;
+import org.model.ZUserBelong;
+import org.model.ZUserRole;
 import org.util.HibernateSessionFactory;
 
 public class ZUserDaoImp implements ZUserDao {
@@ -29,17 +32,17 @@ public class ZUserDaoImp implements ZUserDao {
 	}
 
 	@Override
-	public boolean addUser(String username, String password) {
+	public long addUser(String username, String password) {
 		try {
 			Session session = HibernateSessionFactory.getSession();
 			Transaction ts = session.beginTransaction();
 			ZUser user = new ZUser(username, password);
-			session.save(user);
+			long id=(Long) session.save(user);
 			ts.commit();
-			return true;
+			return id;
 		} catch (Exception e) {
 			e.printStackTrace();
-			return false;
+			return -1;
 		} finally {
 			HibernateSessionFactory.closeSession();
 		}
@@ -71,6 +74,7 @@ public class ZUserDaoImp implements ZUserDao {
 			
 			ZUser u = (ZUser) session.load(ZUser.class, id);
 			session.delete(u);
+			ts.commit();
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -98,6 +102,43 @@ public class ZUserDaoImp implements ZUserDao {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
+		}
+	}
+
+	@Override
+	public boolean deleteUB(long uid) {
+		try {
+			Session session = HibernateSessionFactory.getSession();
+			Transaction ts=  session.beginTransaction();
+			
+			SQLQuery sqlQuery = session.createSQLQuery("delete from z_user_belong where user_id=?");
+			sqlQuery.setParameter(0, uid);
+			sqlQuery.executeUpdate();
+			ts.commit();
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}finally{
+			HibernateSessionFactory.closeSession();
+		}
+	}
+
+	@Override
+	public boolean addUB(long uid, String belong) {
+		try {
+			Session session = HibernateSessionFactory.getSession();
+			Transaction ts=  session.beginTransaction();
+			
+			ZUserBelong ub = new ZUserBelong(uid,belong);
+			session.save(ub);
+			ts.commit();
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}finally{
+			HibernateSessionFactory.closeSession();
 		}
 	}
 }
