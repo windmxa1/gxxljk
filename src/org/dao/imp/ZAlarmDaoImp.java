@@ -141,7 +141,7 @@ public class ZAlarmDaoImp implements ZAlarmDao {
 			Session session = HibernateSessionFactory.getSession();
 
 			Query query = session
-					.createQuery("select count(id) from ZAlarm where ack=0");
+					.createQuery("select count(a.id) from ZAlarm  a where a.host in( select gh.host from z_gx_host gh, z_user_belong ub where gh.belong = ub.belong and ub.user_id=?)");
 			query.setMaxResults(1);
 			Long count = (Long) query.uniqueResult();
 			return count;
