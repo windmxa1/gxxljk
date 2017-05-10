@@ -1,5 +1,6 @@
 package org.action;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -15,7 +16,6 @@ import org.dao.imp.ZUserDaoImp;
 import org.model.ZUser;
 import org.tools.R;
 import org.view.VRaId;
-import org.view.VUrId;
 
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
@@ -26,6 +26,8 @@ public class ZUserAction extends ActionSupport {
 	private String password;
 	private String belong;	//register时传过来的所属分局
 	private String role;	//注册时传过来的角色
+	
+	private String oldpwd;	//修改密码时传输，旧密码
 
 	private Object result;
 
@@ -43,7 +45,9 @@ public class ZUserAction extends ActionSupport {
 			long rid = rDao.getRByU(u.getId());
 			List<VRaId> list = aDao.getRAList(rid);
 			session.put("raList", list);
-			result = R.getJson(1, "登录成功", true);
+			Map<String, Object> map = new HashMap<String, Object>();
+			map.put("userid", u.getId());
+			result = R.getJson(1, "登录成功", map);
 		} else {
 			result = R.getJson(0, "用户名或密码错误", false);
 		}
@@ -105,7 +109,11 @@ public class ZUserAction extends ActionSupport {
 	
 	public String updateUser()throws Exception{
 		ZUserDao uDao = new ZUserDaoImp();
-		if(uDao.updateUser(id, password))
+		Map<String, Object> session = ActionContext.getContext().getSession();
+		ZUser user = (ZUser) session.get("user");
+		if(uDao.getUser(user.getUsername(), oldpwd)==null){
+			result=R.getJson(-1, "密码错误", false);
+		}else if(uDao.updateUser(user.getId(), password))
 			result=R.getJson(1, "修改密码成功", true);
 		else
 			result=R.getJson(0, "修改密码失败", false);
@@ -168,4 +176,13 @@ public class ZUserAction extends ActionSupport {
 	public void setRole(String role) {
 		this.role = role;
 	}
+
+	public String getOldpwd() {
+		return oldpwd;
+	}
+
+	public void setOldpwd(String oldpwd) {
+		this.oldpwd = oldpwd;
+	}
+	
 }

@@ -192,5 +192,11 @@
 				<param name="root">result</param>
 			</result>
 		</action>
+		<action name="getSession" class="org.action.ZUserAction"
+			method="getSession">
+			<result type="json" name="success">
+				<param name="root">result</param>
+			</result>
+		</action>
 	</package>
 </struts>

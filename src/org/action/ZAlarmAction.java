@@ -14,8 +14,10 @@ import javax.servlet.http.HttpSession;
 import org.apache.struts2.ServletActionContext;
 import org.dao.ZAlarmDao;
 import org.dao.ZConnectCtlDao;
+import org.dao.ZUserDao;
 import org.dao.imp.ZAlarmDaoImp;
 import org.dao.imp.ZConnectCtlDaoImp;
+import org.dao.imp.ZUserDaoImp;
 import org.model.ZConnectCtl;
 import org.model.ZUser;
 import org.tools.Constans;
@@ -42,12 +44,14 @@ public class ZAlarmAction extends ActionSupport {
 	private Object result;
 
 	/**
-	 * 清除查询罐体数据的时间缓存
+	 * 清除查询数据的时间缓存
 	 */
 	public String clearSession() {
 		HttpSession session1 = ServletActionContext.getRequest().getSession();
-		session1.removeAttribute("start_time");
-		session1.removeAttribute("end_time");
+		session1.removeAttribute("start_time_a");
+		session1.removeAttribute("end_time_a");
+		session1.removeAttribute("start_time_e");
+		session1.removeAttribute("end_time_e");
 		// ActionContext.getContext().getSession().remove("start_time");
 		// ActionContext.getContext().getSession().remove("end_time");
 		// Map<String, String> message = new HashMap<>();
@@ -72,26 +76,51 @@ public class ZAlarmAction extends ActionSupport {
 	}
 
 	/**
+	 * 判断是否为总局工作人员
+	 * 
+	 * @param userid
+	 */
+	private boolean isCentral(Long userid) {
+		ZUserDao uDao = new ZUserDaoImp();
+		if (uDao.getUserBelong(userid).contains("总局")) {
+//			System.out.println("总局人员");
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
 	 * 2.获取报警列表
 	 */
 	public String getAlarmList() {
 		ZAlarmDao aDao = new ZAlarmDaoImp();
 		Map<String, Object> map = new HashMap<>();
+		Map<String, Object> session1 = ActionContext.getContext().getSession();
+		ZUser user = (ZUser) session1.get("user");
+
 		try {
 			HttpSession session = ServletActionContext.getRequest()
 					.getSession();
 			if (end_time == null || start_time == null || end_time.equals("")
 					|| start_time.equals("")) {
-				end_time = (String) session.getAttribute("end_time");
-				start_time = (String) session.getAttribute("start_time");
+				end_time = (String) session.getAttribute("end_time_a");
+				start_time = (String) session.getAttribute("start_time_a");
 			} else {
 				/******* 保存缓存，确保下次查询也返回对应时间段的数据 ******/
-				session.setAttribute("end_time", end_time);
-				session.setAttribute("start_time", start_time);
+				session.setAttribute("end_time_a", end_time);
+				session.setAttribute("start_time_a", start_time);
 			}
 			if (start_time == null || end_time == null) {
-				long count = aDao.getCount(type);
-				List list = aDao.getAlarmList(start, limit, type);
+				long count;
+				List list;
+				if (isCentral(user.getId())) {
+					count = aDao.getCount(type);
+					list = aDao.getAlarmList(start, limit, type);
+				} else {
+					count = aDao.getCount(type, user.getId());
+					list = aDao.getAlarmList(start, limit, type, user.getId());
+				}
 				map.put("total", count);
 				map.put("list", list);
 				result = R.getJson(1, "", map);
@@ -100,15 +129,24 @@ public class ZAlarmAction extends ActionSupport {
 				long start_clock = sdf.parse(start_time).getTime();
 				long end_clock = sdf.parse(end_time).getTime();
 				if (start_clock <= end_clock) {
-					if (start_clock == end_clock) {
-						Calendar calendar = new GregorianCalendar();
-						calendar.setTimeInMillis(end_clock);
-						calendar.add(calendar.DATE, 1);// 把日期往后增加一天.整数往后推,负数往前移动
-						end_time = sdf.format(calendar.getTime());
+					// if (start_clock == end_clock) {
+					Calendar calendar = new GregorianCalendar();
+					calendar.setTimeInMillis(end_clock);
+					calendar.add(calendar.DATE, 1);// 把日期往后增加一天.整数往后推,负数往前移动
+					end_time = sdf.format(calendar.getTime());
+					// }
+					List<VAlarmId> list;
+					Long count;
+					if (isCentral(user.getId())) {
+						list = aDao.getAlarmList(start, limit, type,
+								start_time, end_time);
+						count = aDao.getAlarmCount(type, start_time, end_time);
+					} else {
+						list = aDao.getAlarmList(start, limit, type,
+								start_time, end_time, user.getId());
+						count = aDao.getAlarmCount(type, start_time, end_time,
+								user.getId());
 					}
-					List<VAlarmId> list = aDao.getAlarmList(start, limit, type,
-							start_time, end_time);
-					Long count = aDao.getAlarmCount(type, start_time, end_time);
 					map.put("total", count);
 					map.put("list", list);
 					result = R.getJson(1, "", map);
@@ -128,10 +166,14 @@ public class ZAlarmAction extends ActionSupport {
 	 */
 	public String checkAlarm() {
 		ZAlarmDao aDao = new ZAlarmDaoImp();
-		long start_time = System.currentTimeMillis() / 1000;
+		long startTime = System.currentTimeMillis() / 1000;
 		HttpSession session1 = ServletActionContext.getRequest().getSession();
 		Map<String, Object> session = ActionContext.getContext().getSession();
 		ZUser user = (ZUser) session.get("user");
+		if (user == null) {
+			result = R.getJson(-999, "检测到您还没有进行登录，请进行登录", "");
+			return SUCCESS;
+		}
 		ZConnectCtlDao cDao = new ZConnectCtlDaoImp();
 		ZConnectCtl conCtl = cDao.getConnect(user.getId(), 0);
 		if (conCtl != null) {
@@ -147,19 +189,30 @@ public class ZAlarmAction extends ActionSupport {
 		try {
 			int i = 0;
 			while (true) {
-				if ((System.currentTimeMillis() / 1000) - start_time > 5 * 60) {
+				if ((System.currentTimeMillis() / 1000) - startTime > 5 * 60) {
 					result = R.getJson(0, "连接超时，默认超时时间为5分钟", "");
+					break;
+				}
+				user = (ZUser) ActionContext.getContext().getSession().get("user");
+				if (user == null) {
+					result = R.getJson(-999, "检测到您还没有进行登录，请进行登录", "");
 					break;
 				}
 				Integer connectCount = cDao.getConnectCount(user.getId(), 0);
 				if (i > 0 && connectCount > 1) {// 非第一次进入轮询，且连接数大于1则退出轮询，从逻辑上实现断开前一次的连接(防止重复连接)
-					 result = R.getJson(0, "自动断开前一次的连接，当前连接数为：" + connectCount, "");
-					 break;
+					result = R.getJson(500, "自动断开前一次的连接，当前连接数为：" + connectCount,
+							"");
+					break;
 				}
 				Set<Long> unAckList = (Set<Long>) session1
 						.getAttribute("UnACKAlarm");
-				Set<Long> unAckList2 = aDao.getUnACKAlarmIds();
-				
+				Set<Long> unAckList2;
+				if (isCentral(user.getId())) {
+					unAckList2 = aDao.getUnACKAlarmIds();
+				} else {
+					unAckList2 = aDao.getUnACKAlarmIds(user.getId());
+				}
+
 				if (unAckList == null) {// 缓存数组为空，说明之前一个报警都没有，所以要提示报警,并且设置值
 					if (unAckList2 != null && unAckList2.size() > 0) {
 						session1.setAttribute("UnACKAlarm", unAckList2);
@@ -186,11 +239,11 @@ public class ZAlarmAction extends ActionSupport {
 			if (id > 0) {
 				conCtl.setId(id);
 			}
-			conCtl
-					.setCount(cDao.getConnectCount(user.getId(), 0)-1);
-//			System.out.println("连接数-1");
+			conCtl.setCount(cDao.getConnectCount(user.getId(), 0) - 1);
+			// System.out.println("连接数-1");
 			cDao.insertConnect(conCtl);
 		}
+		System.out.println("本次连接耗时:"+(System.currentTimeMillis()/1000-startTime)+"秒");
 		return SUCCESS;
 	}
 
@@ -206,7 +259,12 @@ public class ZAlarmAction extends ActionSupport {
 			result = R.getJson(0, "检测到您还没有进行登录，请重新登录", "");
 			return SUCCESS;
 		}
-		List list = aDao.getUnACKAlarmList();
+		List list;
+		if (isCentral(user.getId())) {
+			list = aDao.getUnACKAlarmList();
+		} else {
+			list = aDao.getUnACKAlarmList(user.getId());
+		}
 		map.put("list", list);
 		result = R.getJson(1, "", map);
 		return SUCCESS;
@@ -216,6 +274,8 @@ public class ZAlarmAction extends ActionSupport {
 	 * 5.删除报警信息
 	 */
 	public String deleteAlarm() {
+		Map<String, Object> session1 = ActionContext.getContext().getSession();
+		ZUser user = (ZUser) session1.get("user");
 		ZAlarmDao aDao = new ZAlarmDaoImp();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		if (start_time == null || end_time == null) {
@@ -226,18 +286,27 @@ public class ZAlarmAction extends ActionSupport {
 			long start_clock = sdf.parse(start_time).getTime();
 			long end_clock = sdf.parse(end_time).getTime();
 			if (start_clock <= end_clock) {
-				if (start_clock == end_clock) {
-					Calendar calendar = new GregorianCalendar();
-					calendar.setTimeInMillis(end_clock);
-					calendar.add(calendar.DATE, 1);// 把日期往后增加一天.整数往后推,负数往前移动
-					// end_time = sdf.format(calendar.getTime());
-					end_clock = calendar.getTimeInMillis();
-				}
+				// if (start_clock == end_clock) {
+				Calendar calendar = new GregorianCalendar();
+				calendar.setTimeInMillis(end_clock);
+				calendar.add(calendar.DATE, 1);// 把日期往后增加一天.整数往后推,负数往前移动
+				// end_time = sdf.format(calendar.getTime());
+				end_clock = calendar.getTimeInMillis();
+				// }
 			}
-			if (aDao.deleteAlarm(start_clock / 1000, end_clock / 1000)) {
-				result = R.getJson(1, "删除成功", "");
+			if (isCentral(user.getId())) {
+				if (aDao.deleteAlarm(start_clock / 1000, end_clock / 1000)) {
+					result = R.getJson(1, "删除成功", "");
+				} else {
+					result = R.getJson(0, "删除失败", "");
+				}
 			} else {
-				result = R.getJson(0, "删除失败", "");
+				if (aDao.deleteAlarm(start_clock / 1000, end_clock / 1000,
+						user.getId())) {
+					result = R.getJson(1, "删除成功", "");
+				} else {
+					result = R.getJson(0, "删除失败", "");
+				}
 			}
 		} catch (ParseException e) {
 			result = R.getJson(0, "数据解析失败，请输入正确的日期格式", "");
@@ -252,9 +321,16 @@ public class ZAlarmAction extends ActionSupport {
 		limit = -1;
 		ZAlarmDao aDao = new ZAlarmDaoImp();
 		Map<String, Object> map = new HashMap<>();
+		Map<String, Object> session1 = ActionContext.getContext().getSession();
+		ZUser user = (ZUser) session1.get("user");
 		try {
 			if (start_time == null || end_time == null) {
-				List list = aDao.getAlarmList(start, limit, type);
+				List list;
+				if (isCentral(user.getId())) {
+					list = aDao.getAlarmList(start, limit, type);
+				} else {
+					list = aDao.getAlarmList(start, limit, type, user.getId());
+				}
 				String url = PDFUtil.buidPDF(Constans.watermark, list, 0);
 				map.put("url", url);
 				result = R.getJson(1, "", map);
@@ -263,14 +339,20 @@ public class ZAlarmAction extends ActionSupport {
 				long start_clock = sdf.parse(start_time).getTime();
 				long end_clock = sdf.parse(end_time).getTime();
 				if (start_clock <= end_clock) {
-					if (start_clock == end_clock) {
-						Calendar calendar = new GregorianCalendar();
-						calendar.setTimeInMillis(end_clock);
-						calendar.add(calendar.DATE, 1);// 把日期往后增加一天.整数往后推,负数往前移动
-						end_time = sdf.format(calendar.getTime());
+					// if (start_clock == end_clock) {
+					Calendar calendar = new GregorianCalendar();
+					calendar.setTimeInMillis(end_clock);
+					calendar.add(calendar.DATE, 1);// 把日期往后增加一天.整数往后推,负数往前移动
+					end_time = sdf.format(calendar.getTime());
+					// }
+					List<VAlarmId> list;
+					if (isCentral(user.getId())) {
+						list = aDao.getAlarmList(0, 200, type, start_time,
+								end_time);
+					} else {
+						list = aDao.getAlarmList(0, 200, type, start_time,
+								end_time, user.getId());
 					}
-					List<VAlarmId> list = aDao.getAlarmList(0, 200, type,
-							start_time, end_time);
 					String url = PDFUtil.buidPDF(Constans.watermark, list, 0);
 					map.put("url", url);
 					result = R.getJson(1, "", map);

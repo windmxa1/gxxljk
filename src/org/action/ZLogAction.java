@@ -59,12 +59,12 @@ public class ZLogAction extends ActionSupport {
 				long start_clock = sdf.parse(start_time).getTime();
 				long end_clock = sdf.parse(end_time).getTime();
 				if (start_clock <= end_clock) {
-					if (start_clock == end_clock) {
+//					if (start_clock == end_clock) {
 						Calendar calendar = new GregorianCalendar();
 						calendar.setTimeInMillis(end_clock);
 						calendar.add(calendar.DATE, 1);// 把日期往后增加一天.整数往后推,负数往前移动
 						end_time = sdf.format(calendar.getTime());
-					}
+//					}
 					List<VLogId> list = lDao.getLogList(start, limit, start_time,
 							end_time);
 					Long count = lDao.getLogCount(start_time, end_time);
@@ -95,13 +95,13 @@ public class ZLogAction extends ActionSupport {
 			long start_clock = sdf.parse(start_time).getTime();
 			long end_clock = sdf.parse(end_time).getTime();
 			if (start_clock <= end_clock) {
-				if (start_clock == end_clock) {
+//				if (start_clock == end_clock) {
 					Calendar calendar = new GregorianCalendar();
 					calendar.setTimeInMillis(end_clock);
 					calendar.add(calendar.DATE, 1);// 把日期往后增加一天.整数往后推,负数往前移动
 //					end_time = sdf.format(calendar.getTime());
 					end_clock = calendar.getTimeInMillis();
-				}
+//				}
 			}
 			if(aDao.deleteLog(start_clock/1000, end_clock/1000)){
 				result = R.getJson(1, "删除成功", "");
@@ -131,12 +131,12 @@ public class ZLogAction extends ActionSupport {
 				long start_clock = sdf.parse(start_time).getTime();
 				long end_clock = sdf.parse(end_time).getTime();
 				if (start_clock <= end_clock) {
-					if (start_clock == end_clock) {
+//					if (start_clock == end_clock) {
 						Calendar calendar = new GregorianCalendar();
 						calendar.setTimeInMillis(end_clock);
 						calendar.add(calendar.DATE, 1);// 把日期往后增加一天.整数往后推,负数往前移动
 						end_time = sdf.format(calendar.getTime());
-					}
+//					}
 					List<VLogId> list = aDao.getLogList(0, 200, start_time,
 							end_time);
 					String url = PDFUtil.buidPDF(Constans.watermark, list, 2);

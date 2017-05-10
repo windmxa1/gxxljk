@@ -95,7 +95,7 @@ public class ZLogDaoImp implements ZLogDao {
 		try {
 			Session session = HibernateSessionFactory.getSession();
 			// Transaction ts = session.beginTransaction();
-			String sql = "select * from v_log where vtime >  ? and vtime<?  order by id desc";
+			String sql = "select * from v_log where (vtime between ? and ?) order by id desc";
 			SQLQuery sqlQuery = session.createSQLQuery(sql);
 			sqlQuery.addEntity(VLog.class);
 			sqlQuery.setParameter(0, start_time);
@@ -130,7 +130,7 @@ public class ZLogDaoImp implements ZLogDao {
 		try {
 			Session session = HibernateSessionFactory.getSession();
 
-			String sql = "select count(*) from VLog where id.vtime>? and id.vtime<?  order by id desc";
+			String sql = "select count(*) from VLog v where (v.id.vtime between ? and ?)  order by id desc";
 			Query query = session.createQuery(sql);
 			query.setParameter(0, start_time);
 			query.setParameter(1, end_time);
@@ -151,10 +151,11 @@ public class ZLogDaoImp implements ZLogDao {
 		try {
 			Session session = HibernateSessionFactory.getSession();
 			Transaction ts = session.beginTransaction();
-			String sql = "delete from ZLog where time>? and time<?";
+			String sql = "delete from ZLog where (time between ? and ?) and time!=?";
 			Query query = session.createQuery(sql);
 			query.setParameter(0, start_clock);
 			query.setParameter(1, end_clock);
+			query.setParameter(2, end_clock);
 			query.executeUpdate();
 			ts.commit();
 

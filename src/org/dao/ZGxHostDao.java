@@ -9,10 +9,12 @@ public interface ZGxHostDao {
 	 * 获取所有光纤主机列表
 	 */
 	public List<ZGxHost> getAllList(Integer start , Integer limit);
+	public List<ZGxHost> getAllList(Integer start , Integer limit,Long userid);
 	/**
 	 * 获取光纤主机的总数目
 	 */
 	public Long getCount();
+	public Long getCount(Long userid);
 	/**
 	 * 修改光纤状态为激活状态,1
 	 */
@@ -38,4 +40,8 @@ public interface ZGxHostDao {
 	 * @return
 	 */
 	public List getBelongList();
+	/**
+	 * 重置光纤连接状态
+	 */
+	public boolean resetState();
 }

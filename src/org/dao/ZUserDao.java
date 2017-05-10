@@ -48,4 +48,8 @@ public interface ZUserDao {
 	 * @return
 	 */
 	public boolean addUB(long uid,String belong);
+	/**
+	 * 8 返回用户所属分局
+	 */
+	public String getUserBelong(Long uid); 
 }

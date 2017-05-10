@@ -33,6 +33,10 @@
 	<mapping resource="org/model/ZUserRole.hbm.xml" />
 	<mapping resource="org/view/VRa.hbm.xml" />
 	<mapping resource="org/view/VUr.hbm.xml" />
+	<mapping resource="org/model/ZUserBelong.hbm.xml" />
+	<mapping resource="org/model/ZWebsocketCtl.hbm.xml" />
+	<mapping resource="org/model/ZAlarmDesc.hbm.xml" />
+
 </session-factory>
 
 </hibernate-configuration>

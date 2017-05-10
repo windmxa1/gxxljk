@@ -37,7 +37,7 @@ public class ZUserDaoImp implements ZUserDao {
 			Session session = HibernateSessionFactory.getSession();
 			Transaction ts = session.beginTransaction();
 			ZUser user = new ZUser(username, password);
-			long id=(Long) session.save(user);
+			long id = (Long) session.save(user);
 			ts.commit();
 			return id;
 		} catch (Exception e) {
@@ -47,13 +47,12 @@ public class ZUserDaoImp implements ZUserDao {
 			HibernateSessionFactory.closeSession();
 		}
 	}
-	
+
 	@Override
 	public ZUser getUser(String username) {
 		try {
 			Session session = HibernateSessionFactory.getSession();
-			Query query = session
-					.createQuery("from ZUser where username=?");
+			Query query = session.createQuery("from ZUser where username=?");
 			query.setParameter(0, username);
 			query.setMaxResults(1);
 			ZUser u = (ZUser) query.uniqueResult();
@@ -70,8 +69,8 @@ public class ZUserDaoImp implements ZUserDao {
 	public boolean deleteUser(long id) {
 		try {
 			Session session = HibernateSessionFactory.getSession();
-			Transaction ts=  session.beginTransaction();
-			
+			Transaction ts = session.beginTransaction();
+
 			ZUser u = (ZUser) session.load(ZUser.class, id);
 			session.delete(u);
 			ts.commit();
@@ -79,7 +78,7 @@ public class ZUserDaoImp implements ZUserDao {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
-		}finally{
+		} finally {
 			HibernateSessionFactory.closeSession();
 		}
 	}
@@ -109,9 +108,10 @@ public class ZUserDaoImp implements ZUserDao {
 	public boolean deleteUB(long uid) {
 		try {
 			Session session = HibernateSessionFactory.getSession();
-			Transaction ts=  session.beginTransaction();
-			
-			SQLQuery sqlQuery = session.createSQLQuery("delete from z_user_belong where user_id=?");
+			Transaction ts = session.beginTransaction();
+
+			SQLQuery sqlQuery = session
+					.createSQLQuery("delete from z_user_belong where user_id=?");
 			sqlQuery.setParameter(0, uid);
 			sqlQuery.executeUpdate();
 			ts.commit();
@@ -119,7 +119,7 @@ public class ZUserDaoImp implements ZUserDao {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
-		}finally{
+		} finally {
 			HibernateSessionFactory.closeSession();
 		}
 	}
@@ -128,16 +128,33 @@ public class ZUserDaoImp implements ZUserDao {
 	public boolean addUB(long uid, String belong) {
 		try {
 			Session session = HibernateSessionFactory.getSession();
-			Transaction ts=  session.beginTransaction();
-			
-			ZUserBelong ub = new ZUserBelong(uid,belong);
+			Transaction ts = session.beginTransaction();
+
+			ZUserBelong ub = new ZUserBelong(uid, belong);
 			session.save(ub);
 			ts.commit();
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
-		}finally{
+		} finally {
+			HibernateSessionFactory.closeSession();
+		}
+	}
+
+	@Override
+	public String getUserBelong(Long uid) {
+		try {
+			Session session = HibernateSessionFactory.getSession();
+			String sql = "select belong from v_ur where uid=?";
+			SQLQuery sqlQuery = session.createSQLQuery(sql);
+			sqlQuery.setParameter(0, uid);
+			String userBelong = (String) sqlQuery.uniqueResult();
+			return userBelong;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		} finally {
 			HibernateSessionFactory.closeSession();
 		}
 	}

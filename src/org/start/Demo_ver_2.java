@@ -45,8 +45,10 @@
 //		SimpleObservable simpleObservable = null;
 //		try {
 //			Thread.sleep(3 * 1000);// 设置延时3秒，即断开重连的缓冲时间
-//			String host = PropertyUtils.getStringByKey("host");
-//			String port = PropertyUtils.getStringByKey("port");
+//			// String host = PropertyUtils.getStringByKey("host");
+//			// String port = PropertyUtils.getStringByKey("port");
+//			String host = "192.168.0.1";
+//			String port = "6179";
 //			socket = new Socket(host, Integer.parseInt(port));
 //			// socket = new Socket("localhost", 6179);
 //
@@ -57,8 +59,8 @@
 //			System.out.println("客户端发送数据：" + json);
 //			out.writeInt(json.getBytes().length);
 //			// 在WINDOWS上不能转换成UTF-8，会导致发送中文数据时数据长度不对，程序崩溃
-//			// out.write(json.getBytes("UTF-8"));
-//			out.write(json.getBytes());
+//			out.write(json.getBytes("UTF-8"));
+//			// out.write(json.getBytes());
 //			out.flush();
 //
 //			// 创建观察者对象
@@ -89,7 +91,7 @@
 //				Thread.sleep(10 * 1000);
 //			}
 //		} catch (ConnectException e) {
-//			// e.printStackTrace();
+//			e.printStackTrace();
 //			// if (simpleObservable != null) {
 //			// simpleObservable.deleteObservers();
 //			// }
@@ -97,7 +99,7 @@
 //			// **DB操作，记录连接异常**/
 //			ZExceptionDao eDao = new ZExceptionDaoImp();
 //			ZException z = new ZException(System.currentTimeMillis() / 1000, 0,
-//					"光纤服务器连接异常",PropertyUtils.getStringByKey("host"));
+//					"光纤服务器连接异常", PropertyUtils.getStringByKey("host"));
 //			eDao.addException(z);
 //			// =================================
 //			connect();
@@ -111,7 +113,8 @@
 //			// **DB操作，记录连接异常**/
 //			ZExceptionDao eDao = new ZExceptionDaoImp();
 //			ZException z = new ZException(System.currentTimeMillis() / 1000, 0,
-//					"光纤服务器异常，请确认服务器Ip以及端口是否改变",PropertyUtils.getStringByKey("host"));
+//					"光纤服务器异常，请确认服务器Ip以及端口是否改变",
+//					PropertyUtils.getStringByKey("host"));
 //			eDao.addException(z);
 //			// =================================
 //			connect();
@@ -127,7 +130,7 @@
 //	//
 //	public SimpleObserver() {
 //		try {
-//			this.socket = new Socket("localhost", 6179);
+//			this.socket = new Socket("192.168.0.1", 6179);
 //		} catch (UnknownHostException e) {
 //			// TODO Auto-generated catch block
 //			e.printStackTrace();
@@ -143,6 +146,7 @@
 //			System.out.println("5秒后重启线程");
 //			Thread.sleep(5000);
 //		} catch (Exception e) {
+//			e.printStackTrace();
 //		}
 //		// 重启线程
 //		SimpleObservable simpleObservable = new SimpleObservable();
@@ -209,7 +213,7 @@
 //				}
 //				if (!result.contains("\"command_code\":\"5000002\"")) {
 //					if (result.contains("\"command_code\":\"5000001\"")) {
-////						System.out.println("接收到报警");
+//						// System.out.println("接收到报警");
 //						// DB操作
 //						ZAlarmDao aDao = new ZAlarmDaoImp();
 //						ObjectMapper mapper = JsonUtils.getInstance();
@@ -219,10 +223,12 @@
 //							long time = new SimpleDateFormat(
 //									"yyyy-MM-dd HH:mm:ss").parse(
 //									ab.getOccur_time()).getTime() / 1000;
-//							
+//
 //							ZAlarm a = new ZAlarm(time, ab.getDistance(),
-//									AlarmUtil.getDescription(ab.getAlarm_level()), ab.getAlarm_level(),
-//									0, ab.getLast_time(),PropertyUtils.getStringByKey("host"));
+//									AlarmUtil.getDescription(ab
+//											.getAlarm_level()),
+//									ab.getAlarm_level(), 0, ab.getLast_time(),
+//									PropertyUtils.getStringByKey("host"));
 //							aDao.addAlarm(a);
 //						} catch (ParseException e) {
 //							// TODO Auto-generated catch block
@@ -231,6 +237,9 @@
 //					} else {
 //						System.out.println("服务器返回数据1：" + result);
 //					}
+//				} else {
+//					// System.out.println();
+//					System.out.println("服务器返回数据1：" + result);
 //				}
 //				result = "";
 //			}
@@ -240,7 +249,8 @@
 //			// **DB操作，记录连接异常**/
 //			ZExceptionDao eDao = new ZExceptionDaoImp();
 //			ZException z = new ZException(System.currentTimeMillis() / 1000, 0,
-//					"光纤连接异常，心跳包未得到正常回应。。。",PropertyUtils.getStringByKey("host"));
+//					"光纤连接异常，心跳包未得到正常回应。。。",
+//					PropertyUtils.getStringByKey("host"));
 //			eDao.addException(z);
 //			// =================================
 //			setChanged();

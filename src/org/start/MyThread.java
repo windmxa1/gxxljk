@@ -43,11 +43,11 @@ public class MyThread extends Thread {
 	@Override
 	public void run() {
 		Integer ErrorCount = 0;
-		connect(host, port,ErrorCount);
+		connect(host, port, ErrorCount);
 	}
 
-	public static Object connect(String host, String port,Integer ErrorCount) {
-		
+	public static Object connect(String host, String port, Integer ErrorCount) {
+
 		DataOutputStream out = null;
 		Socket socket = null;
 		// B b = null;
@@ -62,13 +62,13 @@ public class MyThread extends Thread {
 			String json = "{\"command_code\":\"8000001\",\"description\":\"login\",\"seq_num\":\"0\",\"account\":\"ffrc\",\"password\":\"ffrc12345\"}";
 			// String json =
 			// "{\"command_code\":\"16001003\",\"description\":\"获取告警记录\",\"seq_num\":\"0\",\"start_date\":\"2015-01-10 01:00:00\",\"end_date\":\"2015-01-15 08:00:00\"}";
-			System.out.println("客户端发送数据：" + json);
+//			System.out.println("客户端发送数据：" + json);
 			out.writeInt(json.getBytes().length);
 			// 在WINDOWS上不能转换成UTF-8，会导致发送中文数据时数据长度不对，程序崩溃
-			// out.write(json.getBytes("UTF-8"));
-			out.write(json.getBytes());
+			out.write(json.getBytes("UTF-8"));
+//			out.write(json.getBytes());
 			out.flush();
-			//更新为激活状态
+			// 更新为激活状态
 			gDao.updateOnStatus(host);
 			ErrorCount = 0;
 
@@ -90,23 +90,20 @@ public class MyThread extends Thread {
 
 				// json =
 				// "{\"command_code\":\"16000201\",\"description\":\"dong dong\",\"seq_num\":\"0\"}";
-				System.out.println("客户端发送数据：" + json);
+//				System.out.println("客户端发送数据：" + json);
 
 				out.writeInt(json.getBytes().length);
 				// 在WINDOWS上不能转换成UTF-8，会导致发送中文数据时数据长度不对，程序崩溃
-				// out.write(json.getBytes("UTF-8"));
+//				 out.write(json.getBytes("UTF-8"));
 				out.write(json.getBytes());
 				out.flush();
 				Thread.sleep(10 * 1000);
 			}
 		} catch (ConnectException e) {
 			// e.printStackTrace();
-			// if (simpleObservable != null) {
-			// simpleObservable.deleteObservers();
-			// }
-			System.out.println(host+","+port);
+			// System.out.println(host+","+port);
 			ErrorCount++;
-			System.out.println("ErrorCount="+ErrorCount);
+			// System.out.println("ErrorCount="+ErrorCount);
 			if (ErrorCount < 5) {
 				System.out.println("光纤服务器连接异常,3秒后自动重连");
 				// **DB操作，记录连接异常**/
@@ -115,25 +112,32 @@ public class MyThread extends Thread {
 						System.currentTimeMillis() / 1000, 0, "光纤服务器连接异常", host);
 				eDao.addException(z);
 				// =================================
-				connect(host, port,ErrorCount);
+				connect(host, port, ErrorCount);
 			} else {// 错误连续超过5次，则不再尝试连接，同时更改光纤连接状态
 				System.out.println("error>5");
 				gDao.updateOffStatus(host);
 			}
-
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 			System.out.println("中断异常");
 		} catch (IOException e) {
-			// e.printStackTrace();
-			System.out.println("光纤服务器连接异常,3秒后自动重连");
-			// **DB操作，记录连接异常**/
-			ZExceptionDao eDao = new ZExceptionDaoImp();
-			ZException z = new ZException(System.currentTimeMillis() / 1000, 0,
-					"光纤服务器异常，请确认服务器Ip以及端口是否改变", host);
-			eDao.addException(z);
-			// =================================
-			connect(host, port,ErrorCount);
+			ErrorCount++;
+			if (ErrorCount < 5) {
+				// e.printStackTrace();
+				System.out.println("光纤服务器连接异常,3秒后自动重连");
+				// **DB操作，记录连接异常**/
+				ZExceptionDao eDao = new ZExceptionDaoImp();
+				ZException z = new ZException(
+						System.currentTimeMillis() / 1000, 0,
+						"光纤服务器异常，请确认服务器Ip以及端口是否改变", host);
+				eDao.addException(z);
+				// =================================
+				connect(host, port, ErrorCount);
+			} else {
+				// 错误连续超过5次，则不再尝试连接，同时更改光纤连接状态
+				System.out.println("error>5");
+				gDao.updateOffStatus(host);
+			}
 		}
 		return null;
 	}
@@ -196,7 +200,7 @@ class SimpleObservable extends Observable implements Runnable {
 
 	SimpleObservable() {
 		thread = new Thread(this);
-		System.out.println("A类被实例化了");
+//		System.out.println("A类被实例化了");
 	}
 
 	public void run() {
@@ -205,12 +209,14 @@ class SimpleObservable extends Observable implements Runnable {
 			byte b[] = null;
 			String result = "";
 			while (true) {
-				System.out.println(k++);
+//				System.out.println(k++);
 				int len = dis.readInt();
+//				System.out.println("服务器返回长度：" + len);
 				if (len < 1024) {
 					b = new byte[len];
 					dis.read(b);
 					result = new String(b, "UTF-8");
+					// result = new String(b);
 					// System.out.println("服务器返回数据1：" + result);
 					b = null;
 				} else {
@@ -220,44 +226,48 @@ class SimpleObservable extends Observable implements Runnable {
 							// System.out.println("len % 1024=" + len % 1024);
 							b = new byte[len % 1024];
 							dis.read(b);
-							result = result + new String(b, "UTF-8");
+							// result = result + new String(b, "UTF-8");
+							// result = result + new String(b);
+							// System.out.println("服务器返回数据1：" + new String(b)
+							// + "***end***");
 						} else {
 							b = new byte[1024];
 							dis.read(b);
-							result = result + new String(b, "UTF-8");
-							// System.out.println("服务器返回数据1："
-							// + new String(b, "UTF-8") + "***end***");
+							// result = result + new String(b, "UTF-8");
+							// result = result + new String(b);
+							// System.out.println("服务器返回数据1：" + new String(b)
+							// + "***end***");
 						}
 						b = null;
+						Thread.sleep(1);
 					}
 				}
-				if (!result.contains("\"command_code\":\"5000002\"")) {
-					if (result.contains("\"command_code\":\"5000001\"")) {
-						// System.out.println("接收到报警");
-						// DB操作
-						ZAlarmDao aDao = new ZAlarmDaoImp();
-						ObjectMapper mapper = JsonUtils.getInstance();
-						AlarmBean ab = mapper
-								.readValue(result, AlarmBean.class);
-						try {
-							long time = new SimpleDateFormat(
-									"yyyy-MM-dd HH:mm:ss").parse(
-									ab.getOccur_time()).getTime() / 1000;
+				// if (!result.contains("\"command_code\":\"5000002\"")) {//
+				// 过滤波形数据
+				if (result.contains("\"command_code\":\"5000001\"")) {// 检测报警
+					// System.out.println("接收到报警");
+					// DB操作
+					ZAlarmDao aDao = new ZAlarmDaoImp();
+					ObjectMapper mapper = JsonUtils.getInstance();
+					AlarmBean ab = mapper.readValue(result, AlarmBean.class);
+					try {
+						long time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+								.parse(ab.getOccur_time()).getTime() / 1000;
 
-							ZAlarm a = new ZAlarm(time, ab.getDistance(),
-									AlarmUtil.getDescription(ab
-											.getAlarm_level()),
-									ab.getAlarm_level(), 0, ab.getLast_time(),
-									host);
-							aDao.addAlarm(a);
-						} catch (ParseException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					} else {
-						System.out.println("服务器返回数据1：" + result);
+						ZAlarm a = new ZAlarm(time, ab.getDistance(),
+								AlarmUtil.getDescription(ab.getAlarm_level()),
+								ab.getAlarm_level(), 0, ab.getLast_time(), host);
+						aDao.addAlarm(a);
+					} catch (ParseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
+				} else {// 心跳及其他操作
+//					if(!result.contains("\"command_code\":\"5000002\"")){
+//						System.out.println("服务器返回数据1：" + result);
+//					}
 				}
+				// }
 				result = "";
 			}
 		} catch (SocketTimeoutException e) {
@@ -280,6 +290,9 @@ class SimpleObservable extends Observable implements Runnable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

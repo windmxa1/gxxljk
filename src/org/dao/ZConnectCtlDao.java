@@ -15,7 +15,7 @@ public interface ZConnectCtlDao {
 	public ZConnectCtl getConnect(Long userid,Integer type);
 	/**
 	 * 获取连接总数
-	 * @param type 0为报警，1为异常
+	 * @param type 0为报警，1为异常，2为websocket
 	 */
 	public Integer getConnectCount(Long userid,Integer type);
 	/**

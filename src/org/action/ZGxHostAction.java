@@ -5,11 +5,15 @@ import java.util.List;
 import java.util.Map;
 
 import org.dao.ZGxHostDao;
+import org.dao.ZUserDao;
 import org.dao.imp.ZGxHostDaoImp;
+import org.dao.imp.ZUserDaoImp;
 import org.model.ZGxHost;
+import org.model.ZUser;
 import org.start.MyThread;
 import org.tools.R;
 
+import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class ZGxHostAction extends ActionSupport {
@@ -28,13 +32,39 @@ public class ZGxHostAction extends ActionSupport {
 	 * 获取所有光纤列表
 	 */
 	public String getGxHostList() {
+		Map<String, Object> session1 = ActionContext.getContext().getSession();
+		ZUser user = (ZUser) session1.get("user");
+		
 		ZGxHostDao gDao = new ZGxHostDaoImp();
-		List<ZGxHost> list = gDao.getAllList(start, limit);
+		Long count;
+		List<ZGxHost> list;
+		if (isCentral(user.getId())) {
+			list = gDao.getAllList(start, limit);
+			count = gDao.getCount();
+		} else {
+			list = gDao.getAllList(start, limit, user.getId());
+			count = gDao.getCount(user.getId());
+		}
 		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("total", gDao.getCount());
+		map.put("total", count);
 		map.put("list", list);
 		result = R.getJson(1, "", map);
 		return SUCCESS;
+	}
+
+	/**
+	 * 判断是否为总局工作人员
+	 * 
+	 * @param userid
+	 */
+	private boolean isCentral(Long userid) {
+		ZUserDao uDao = new ZUserDaoImp();
+		if (uDao.getUserBelong(userid).contains("总局")) {
+			// System.out.println("总局人员");
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	/**
@@ -47,7 +77,7 @@ public class ZGxHostAction extends ActionSupport {
 		}
 		ZGxHostDao gDao = new ZGxHostDaoImp();
 		if (gDao.addGxHost(gxHost) > 0) {
-			MyThread thread = new MyThread("localhost", "6179");
+			MyThread thread = new MyThread(host, port);
 			thread.start();
 			result = R.getJson(1, "添加成功，正在等待激活。。", "");
 		} else {
@@ -78,12 +108,13 @@ public class ZGxHostAction extends ActionSupport {
 		result = R.getJson(1, "设备激活中，请稍后", "");
 		return SUCCESS;
 	}
-	
+
 	/**
 	 * 获取所有分局信息
+	 * 
 	 * @return
 	 */
-	public String getBelongList(){
+	public String getBelongList() {
 		ZGxHostDao gDao = new ZGxHostDaoImp();
 		List<String> list = gDao.getBelongList();
 		result = R.getJson(1, "", list);
