@@ -5,7 +5,7 @@ Anything outside the "proxool" tag is ignored. -->
 	<proxool>
 		<alias>proxoolPool</alias>
 		<!--proxool只能管理由自己产生的连接 -->
-		<driver-url>jdbc:mysql://192.168.0.100:3306/gxxljk?characterEncoding=UTF-8&amp;autoReconnect=true
+		<driver-url>jdbc:mysql://192.168.1.150:3306/gxxljk?characterEncoding=UTF-8&amp;autoReconnect=true
 		</driver-url>
 		<driver-class>com.mysql.jdbc.Driver</driver-class>
 		<driver-properties>

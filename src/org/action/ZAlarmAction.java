@@ -83,7 +83,7 @@ public class ZAlarmAction extends ActionSupport {
 	private boolean isCentral(Long userid) {
 		ZUserDao uDao = new ZUserDaoImp();
 		if (uDao.getUserBelong(userid).contains("总局")) {
-//			System.out.println("总局人员");
+			// System.out.println("总局人员");
 			return true;
 		} else {
 			return false;
@@ -111,6 +111,7 @@ public class ZAlarmAction extends ActionSupport {
 				session.setAttribute("end_time_a", end_time);
 				session.setAttribute("start_time_a", start_time);
 			}
+			// boolean isCentral = isCentral(user.getId());
 			if (start_time == null || end_time == null) {
 				long count;
 				List list;
@@ -193,37 +194,37 @@ public class ZAlarmAction extends ActionSupport {
 					result = R.getJson(0, "连接超时，默认超时时间为5分钟", "");
 					break;
 				}
-				user = (ZUser) ActionContext.getContext().getSession().get("user");
+				user = (ZUser) ActionContext.getContext().getSession()
+						.get("user");
 				if (user == null) {
 					result = R.getJson(-999, "检测到您还没有进行登录，请进行登录", "");
 					break;
 				}
 				Integer connectCount = cDao.getConnectCount(user.getId(), 0);
 				if (i > 0 && connectCount > 1) {// 非第一次进入轮询，且连接数大于1则退出轮询，从逻辑上实现断开前一次的连接(防止重复连接)
-					result = R.getJson(500, "自动断开前一次的连接，当前连接数为：" + connectCount,
-							"");
+					result = R.getJson(500,
+							"自动断开前一次的连接，当前连接数为：" + connectCount, "");
 					break;
 				}
-				Set<Long> unAckList = (Set<Long>) session1
+				List<VAlarmId> unAckList = (List<VAlarmId>) session1
 						.getAttribute("UnACKAlarm");
-				Set<Long> unAckList2;
+				List<VAlarmId> unAckList2;
 				if (isCentral(user.getId())) {
-					unAckList2 = aDao.getUnACKAlarmIds();
+					unAckList2 = aDao.getUnACKAlarmList();
 				} else {
-					unAckList2 = aDao.getUnACKAlarmIds(user.getId());
+					unAckList2 = aDao.getUnACKAlarmList(user.getId());
 				}
-
 				if (unAckList == null) {// 缓存数组为空，说明之前一个报警都没有，所以要提示报警,并且设置值
 					if (unAckList2 != null && unAckList2.size() > 0) {
 						session1.setAttribute("UnACKAlarm", unAckList2);
-						result = R.getJson(1, "请注意，线路安全告警！", "");
+						result = R.getJson(1, "请注意，线路安全告警！", unAckList2);
 						break;
 					}
 				} else {// 如果有缓存数组,缓存数组没有全包含报警数组，说明有新报警所以要提示报警
 					if (!unAckList.containsAll(unAckList2)) {
 						System.out.println("有新的报警记录");
 						session1.setAttribute("UnACKAlarm", unAckList2);
-						result = R.getJson(1, "请注意，线路安全告警！", "");
+						result = R.getJson(1, "请注意，线路安全告警！", unAckList2);
 						break;
 					}
 				}
@@ -243,7 +244,8 @@ public class ZAlarmAction extends ActionSupport {
 			// System.out.println("连接数-1");
 			cDao.insertConnect(conCtl);
 		}
-		System.out.println("本次连接耗时:"+(System.currentTimeMillis()/1000-startTime)+"秒");
+		System.out.println("本次连接耗时:"
+				+ (System.currentTimeMillis() / 1000 - startTime) + "秒");
 		return SUCCESS;
 	}
 

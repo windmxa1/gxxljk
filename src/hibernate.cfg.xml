@@ -36,6 +36,7 @@
 	<mapping resource="org/model/ZUserBelong.hbm.xml" />
 	<mapping resource="org/model/ZWebsocketCtl.hbm.xml" />
 	<mapping resource="org/model/ZAlarmDesc.hbm.xml" />
+	<mapping resource="org/model/ZWell.hbm.xml" />
 
 </session-factory>
 

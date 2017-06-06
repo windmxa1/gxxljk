@@ -289,7 +289,6 @@ public class ZAlarmDaoImp implements ZAlarmDao {
 		}
 	}
 
-	
 	@Override
 	public List getAlarmList(Integer start, Integer limit, Integer type) {
 		try {
@@ -383,12 +382,11 @@ public class ZAlarmDaoImp implements ZAlarmDao {
 	}
 
 	@Override
-	public List getUnACKAlarmList() {
+	public List<VAlarmId> getUnACKAlarmList() {
 		try {
 			Session session = HibernateSessionFactory.getSession();
 			// Transaction ts = session.beginTransaction();
-			String sql = "";
-			sql = "select * from v_alarm v where ack=0 order by id desc";
+			String sql = "select * from v_alarm v where ack=0 order by id desc";
 			SQLQuery sqlQuery = session.createSQLQuery(sql);
 			sqlQuery.addEntity(VAlarm.class);
 			List<VAlarm> li = sqlQuery.list();
@@ -509,5 +507,4 @@ public class ZAlarmDaoImp implements ZAlarmDao {
 		}
 	}
 
-	
 }

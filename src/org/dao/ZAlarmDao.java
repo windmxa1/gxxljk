@@ -45,8 +45,8 @@ public interface ZAlarmDao {
 	/**
 	 * 6.获取所有未确认的告警列表
 	 */
-	public List getUnACKAlarmList(Long userid);
-	public List getUnACKAlarmList();
+	public List<VAlarmId> getUnACKAlarmList(Long userid);
+	public List<VAlarmId> getUnACKAlarmList();
 	/**
 	 * 7.获取指定时间段的数据
 	 */

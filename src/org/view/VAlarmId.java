@@ -17,6 +17,8 @@ public class VAlarmId implements java.io.Serializable {
 	private String lastTime;
 	private String host;
 	private String vtime;
+	private String location;
+	private String name;
 
 	// Constructors
 
@@ -41,7 +43,7 @@ public class VAlarmId implements java.io.Serializable {
 	/** full constructor */
 	public VAlarmId(Long id, Long occurTime, String distance,
 			String description, String level, Integer ack, String lastTime,
-			String host, String vtime) {
+			String host, String vtime, String location, String name) {
 		this.id = id;
 		this.occurTime = occurTime;
 		this.distance = distance;
@@ -51,6 +53,8 @@ public class VAlarmId implements java.io.Serializable {
 		this.lastTime = lastTime;
 		this.host = host;
 		this.vtime = vtime;
+		this.location = location;
+		this.name = name;
 	}
 
 	// Property accessors
@@ -127,6 +131,22 @@ public class VAlarmId implements java.io.Serializable {
 		this.vtime = vtime;
 	}
 
+	public String getLocation() {
+		return this.location;
+	}
+
+	public void setLocation(String location) {
+		this.location = location;
+	}
+
+	public String getName() {
+		return this.name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
 	public boolean equals(Object other) {
 		if ((this == other))
 			return true;
@@ -166,7 +186,14 @@ public class VAlarmId implements java.io.Serializable {
 						.equals(castOther.getHost())))
 				&& ((this.getVtime() == castOther.getVtime()) || (this
 						.getVtime() != null && castOther.getVtime() != null && this
-						.getVtime().equals(castOther.getVtime())));
+						.getVtime().equals(castOther.getVtime())))
+				&& ((this.getLocation() == castOther.getLocation()) || (this
+						.getLocation() != null
+						&& castOther.getLocation() != null && this
+						.getLocation().equals(castOther.getLocation())))
+				&& ((this.getName() == castOther.getName()) || (this.getName() != null
+						&& castOther.getName() != null && this.getName()
+						.equals(castOther.getName())));
 	}
 
 	public int hashCode() {
@@ -191,6 +218,10 @@ public class VAlarmId implements java.io.Serializable {
 				+ (getHost() == null ? 0 : this.getHost().hashCode());
 		result = 37 * result
 				+ (getVtime() == null ? 0 : this.getVtime().hashCode());
+		result = 37 * result
+				+ (getLocation() == null ? 0 : this.getLocation().hashCode());
+		result = 37 * result
+				+ (getName() == null ? 0 : this.getName().hashCode());
 		return result;
 	}
 

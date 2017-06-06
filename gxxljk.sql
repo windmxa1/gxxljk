@@ -1,22 +1,22 @@
 /*
 Navicat MySQL Data Transfer
 
-Source Server         : localhost_3306
-Source Server Version : 50543
+Source Server         : 2_Marshall
+Source Server Version : 50535
 Source Host           : localhost:3306
 Source Database       : gxxljk
 
 Target Server Type    : MYSQL
-Target Server Version : 50543
+Target Server Version : 50535
 File Encoding         : 65001
 
-Date: 2017-05-16 07:50:38
+Date: 2017-06-06 14:48:21
 */
 
 SET FOREIGN_KEY_CHECKS=0;
 
 -- ----------------------------
--- Table structure for z_alarm
+-- Table structure for `z_alarm`
 -- ----------------------------
 DROP TABLE IF EXISTS `z_alarm`;
 CREATE TABLE `z_alarm` (
@@ -29,15 +29,15 @@ CREATE TABLE `z_alarm` (
   `last_time` varchar(20) NOT NULL,
   `host` varchar(20) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=611 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=622 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of z_alarm
 -- ----------------------------
 INSERT INTO `z_alarm` VALUES ('324', '1491321600', '874', 'alarm', '1', '0', '18', 'localhost');
-INSERT INTO `z_alarm` VALUES ('325', '1491408000', '874', 'alarm', '1', '1', '18', 'localhost');
-INSERT INTO `z_alarm` VALUES ('326', '1491494400', '874', 'alarm', '1', '1', '18', 'localhost');
-INSERT INTO `z_alarm` VALUES ('327', '1491580800', '874', 'alarm', '1', '1', '18', 'localhost');
+INSERT INTO `z_alarm` VALUES ('325', '1491408000', '874', 'alarm', '1', '0', '18', 'localhost');
+INSERT INTO `z_alarm` VALUES ('326', '1491494400', '874', 'alarm', '1', '0', '18', 'localhost');
+INSERT INTO `z_alarm` VALUES ('327', '1491580800', '874', 'alarm', '1', '0', '18', 'localhost');
 INSERT INTO `z_alarm` VALUES ('328', '1491667200', '874', 'alarm', '1', '0', '18', 'localhost');
 INSERT INTO `z_alarm` VALUES ('329', '1491321600', '874', 'alarm', '1', '0', '18', 'localhost');
 INSERT INTO `z_alarm` VALUES ('330', '1491408000', '874', 'alarm', '1', '1', '18', 'localhost');
@@ -319,9 +319,20 @@ INSERT INTO `z_alarm` VALUES ('607', '1492763573', '117480', '触碰接头盒', 
 INSERT INTO `z_alarm` VALUES ('608', '1492763579', '0', '', '-1', '0', '0', '192.168.0.1');
 INSERT INTO `z_alarm` VALUES ('609', '1492763892', '0', '', '-2', '0', '0', '192.168.0.1');
 INSERT INTO `z_alarm` VALUES ('610', '1492763893', '0', '', '-1', '0', '0', '192.168.0.1');
+INSERT INTO `z_alarm` VALUES ('611', '1494902502', '874', '触动光芯', '1', '0', '18', '192.168.1.150');
+INSERT INTO `z_alarm` VALUES ('612', '1494902508', '874', '触动光芯', '1', '0', '18', '192.168.1.150');
+INSERT INTO `z_alarm` VALUES ('613', '1494902659', '874', '触动光芯', '1', '0', '18', '192.168.1.150');
+INSERT INTO `z_alarm` VALUES ('614', '1494902663', '874', '触动光芯', '1', '0', '18', '192.168.1.150');
+INSERT INTO `z_alarm` VALUES ('615', '1494902665', '874', '触动光芯', '1', '0', '18', '192.168.1.150');
+INSERT INTO `z_alarm` VALUES ('616', '1494902672', '874', '触动光芯', '1', '0', '18', '192.168.1.150');
+INSERT INTO `z_alarm` VALUES ('617', '1494902680', '874', '触动光芯', '1', '0', '18', '192.168.1.150');
+INSERT INTO `z_alarm` VALUES ('618', '1494902683', '874', '触动光芯', '1', '0', '18', '192.168.1.150');
+INSERT INTO `z_alarm` VALUES ('619', '1494904032', '874', '触动光芯', '1', '0', '18', '192.168.1.150');
+INSERT INTO `z_alarm` VALUES ('620', '1494904039', '874', '触动光芯', '1', '0', '18', '192.168.1.150');
+INSERT INTO `z_alarm` VALUES ('621', '1494904041', '874', '触动光芯', '1', '0', '18', '192.168.1.150');
 
 -- ----------------------------
--- Table structure for z_alarm_desc
+-- Table structure for `z_alarm_desc`
 -- ----------------------------
 DROP TABLE IF EXISTS `z_alarm_desc`;
 CREATE TABLE `z_alarm_desc` (
@@ -340,7 +351,7 @@ INSERT INTO `z_alarm_desc` VALUES ('3', '3', '触碰接头盒');
 INSERT INTO `z_alarm_desc` VALUES ('4', '4', '触动光芯');
 
 -- ----------------------------
--- Table structure for z_authority
+-- Table structure for `z_authority`
 -- ----------------------------
 DROP TABLE IF EXISTS `z_authority`;
 CREATE TABLE `z_authority` (
@@ -374,7 +385,7 @@ INSERT INTO `z_authority` VALUES ('18', 'delGxHost', '删除光纤');
 INSERT INTO `z_authority` VALUES ('19', 'activeGxHost', '激活光纤');
 
 -- ----------------------------
--- Table structure for z_connect_ctl
+-- Table structure for `z_connect_ctl`
 -- ----------------------------
 DROP TABLE IF EXISTS `z_connect_ctl`;
 CREATE TABLE `z_connect_ctl` (
@@ -394,7 +405,7 @@ INSERT INTO `z_connect_ctl` VALUES ('3', '1', '0', '2');
 INSERT INTO `z_connect_ctl` VALUES ('4', '25', '0', '0');
 
 -- ----------------------------
--- Table structure for z_exception
+-- Table structure for `z_exception`
 -- ----------------------------
 DROP TABLE IF EXISTS `z_exception`;
 CREATE TABLE `z_exception` (
@@ -404,7 +415,7 @@ CREATE TABLE `z_exception` (
   `description` varchar(255) NOT NULL,
   `host` varchar(20) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1243 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1251 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of z_exception
@@ -1643,9 +1654,17 @@ INSERT INTO `z_exception` VALUES ('1239', '1492754940', '0', '光纤服务器异
 INSERT INTO `z_exception` VALUES ('1240', '1492754964', '0', '光纤服务器连接异常', '192.168.0.1');
 INSERT INTO `z_exception` VALUES ('1241', '1492754988', '0', '光纤服务器连接异常', '192.168.0.1');
 INSERT INTO `z_exception` VALUES ('1242', '1492755012', '0', '光纤服务器连接异常', '192.168.0.1');
+INSERT INTO `z_exception` VALUES ('1243', '1494902697', '0', '光纤服务器异常，请确认服务器Ip以及端口是否改变', '192.168.1.150');
+INSERT INTO `z_exception` VALUES ('1244', '1494902701', '0', '光纤服务器连接异常', '192.168.1.150');
+INSERT INTO `z_exception` VALUES ('1245', '1494902705', '0', '光纤服务器连接异常', '192.168.1.150');
+INSERT INTO `z_exception` VALUES ('1246', '1494902709', '0', '光纤服务器连接异常', '192.168.1.150');
+INSERT INTO `z_exception` VALUES ('1247', '1494912727', '0', '光纤服务器异常，请确认服务器Ip以及端口是否改变', '192.168.1.150');
+INSERT INTO `z_exception` VALUES ('1248', '1494912731', '0', '光纤服务器连接异常', '192.168.1.150');
+INSERT INTO `z_exception` VALUES ('1249', '1494912735', '0', '光纤服务器连接异常', '192.168.1.150');
+INSERT INTO `z_exception` VALUES ('1250', '1494912739', '0', '光纤服务器连接异常', '192.168.1.150');
 
 -- ----------------------------
--- Table structure for z_gx_host
+-- Table structure for `z_gx_host`
 -- ----------------------------
 DROP TABLE IF EXISTS `z_gx_host`;
 CREATE TABLE `z_gx_host` (
@@ -1663,12 +1682,13 @@ CREATE TABLE `z_gx_host` (
 -- Records of z_gx_host
 -- ----------------------------
 INSERT INTO `z_gx_host` VALUES ('1', '192.168.199.127', '本地线路1', '本地线路', 'A分局', '0', '6179');
-INSERT INTO `z_gx_host` VALUES ('4', '192.168.0.1', '本地线路2', '本地线路', 'A总局', '0', '6179');
+INSERT INTO `z_gx_host` VALUES ('2', 'localhost', '本机测试', '本机测试', 'A总局', '0', '6179');
+INSERT INTO `z_gx_host` VALUES ('4', '192.168.1.150', '本地线路2', '本地线路', 'A总局', '0', '6179');
 INSERT INTO `z_gx_host` VALUES ('5', '192.168.1.101', '地方3', '地方 ', 'B分局', '0', '23');
 INSERT INTO `z_gx_host` VALUES ('8', '192.168.0.222', '测试链路', '描述。', 'A总局', '0', '6179');
 
 -- ----------------------------
--- Table structure for z_log
+-- Table structure for `z_log`
 -- ----------------------------
 DROP TABLE IF EXISTS `z_log`;
 CREATE TABLE `z_log` (
@@ -1678,7 +1698,7 @@ CREATE TABLE `z_log` (
   `time` bigint(20) NOT NULL,
   `data_id` bigint(20) DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4309 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4388 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of z_log
@@ -4285,9 +4305,88 @@ INSERT INTO `z_log` VALUES ('4305', 'admin', 'login', '1493101223', '0');
 INSERT INTO `z_log` VALUES ('4306', '111', 'login', '1493101378', '0');
 INSERT INTO `z_log` VALUES ('4307', 'admin', 'login', '1493101524', '0');
 INSERT INTO `z_log` VALUES ('4308', 'admin', 'login', '1493101574', '0');
+INSERT INTO `z_log` VALUES ('4309', 'admin', 'login', '1494902266', '0');
+INSERT INTO `z_log` VALUES ('4310', 'admin', 'getGxHostList', '1494902270', '0');
+INSERT INTO `z_log` VALUES ('4311', 'admin', 'getGxHostList', '1494902270', '0');
+INSERT INTO `z_log` VALUES ('4312', 'admin', 'login', '1494902373', '0');
+INSERT INTO `z_log` VALUES ('4313', 'admin', 'getGxHostList', '1494902373', '0');
+INSERT INTO `z_log` VALUES ('4314', 'admin', 'getGxHostList', '1494902373', '0');
+INSERT INTO `z_log` VALUES ('4315', 'admin', 'login', '1494902429', '0');
+INSERT INTO `z_log` VALUES ('4316', 'admin', 'getGxHostList', '1494902429', '0');
+INSERT INTO `z_log` VALUES ('4317', 'admin', 'getGxHostList', '1494902429', '0');
+INSERT INTO `z_log` VALUES ('4318', 'admin', 'getExceptionList', '1494902472', '0');
+INSERT INTO `z_log` VALUES ('4319', 'admin', 'getAlarmList', '1494902473', '0');
+INSERT INTO `z_log` VALUES ('4320', 'admin', 'getAlarmList', '1494902479', '0');
+INSERT INTO `z_log` VALUES ('4321', 'admin', 'getExceptionList', '1494902480', '0');
+INSERT INTO `z_log` VALUES ('4322', 'admin', 'activeGxHost', '1494902494', '0');
+INSERT INTO `z_log` VALUES ('4323', 'admin', 'getGxHostList', '1494902494', '0');
+INSERT INTO `z_log` VALUES ('4324', 'admin', 'getGxHostList', '1494902498', '0');
+INSERT INTO `z_log` VALUES ('4325', 'admin', 'getAlarmList', '1494902502', '0');
+INSERT INTO `z_log` VALUES ('4326', 'admin', 'getAlarmList', '1494902504', '0');
+INSERT INTO `z_log` VALUES ('4327', 'admin', 'getAlarmList', '1494902508', '0');
+INSERT INTO `z_log` VALUES ('4328', 'admin', 'getAlarmList', '1494902510', '0');
+INSERT INTO `z_log` VALUES ('4329', 'admin', 'getAlarmList', '1494902659', '0');
+INSERT INTO `z_log` VALUES ('4330', 'admin', 'getAlarmList', '1494902661', '0');
+INSERT INTO `z_log` VALUES ('4331', 'admin', 'getAlarmList', '1494902663', '0');
+INSERT INTO `z_log` VALUES ('4332', 'admin', 'getAlarmList', '1494902666', '0');
+INSERT INTO `z_log` VALUES ('4333', 'admin', 'getAlarmList', '1494902669', '0');
+INSERT INTO `z_log` VALUES ('4334', 'admin', 'getAlarmList', '1494902673', '0');
+INSERT INTO `z_log` VALUES ('4335', 'admin', 'getAlarmList', '1494902676', '0');
+INSERT INTO `z_log` VALUES ('4336', 'admin', 'getAlarmList', '1494902681', '0');
+INSERT INTO `z_log` VALUES ('4337', 'admin', 'getAlarmList', '1494902683', '0');
+INSERT INTO `z_log` VALUES ('4338', 'admin', 'getAlarmList', '1494902686', '0');
+INSERT INTO `z_log` VALUES ('4339', 'admin', 'getExceptionList', '1494902698', '0');
+INSERT INTO `z_log` VALUES ('4340', 'admin', 'getExceptionList', '1494902702', '0');
+INSERT INTO `z_log` VALUES ('4341', 'admin', 'getExceptionList', '1494902707', '0');
+INSERT INTO `z_log` VALUES ('4342', 'admin', 'getExceptionList', '1494902711', '0');
+INSERT INTO `z_log` VALUES ('4343', 'admin', 'getGxHostList', '1494902738', '0');
+INSERT INTO `z_log` VALUES ('4344', 'admin', 'activeGxHost', '1494902740', '0');
+INSERT INTO `z_log` VALUES ('4345', 'admin', 'getGxHostList', '1494902740', '0');
+INSERT INTO `z_log` VALUES ('4346', 'admin', 'getGxHostList', '1494902742', '0');
+INSERT INTO `z_log` VALUES ('4347', 'admin', 'getGxHostList', '1494902743', '0');
+INSERT INTO `z_log` VALUES ('4348', 'admin', 'getGxHostList', '1494902744', '0');
+INSERT INTO `z_log` VALUES ('4349', 'admin', 'getGxHostList', '1494902744', '0');
+INSERT INTO `z_log` VALUES ('4350', 'admin', 'getExceptionList', '1494902747', '0');
+INSERT INTO `z_log` VALUES ('4351', 'admin', 'getAlarmList', '1494902984', '0');
+INSERT INTO `z_log` VALUES ('4352', 'admin', 'getAlarmList', '1494903286', '0');
+INSERT INTO `z_log` VALUES ('4353', 'admin', 'getAlarmList', '1494903586', '0');
+INSERT INTO `z_log` VALUES ('4354', 'admin', 'getAlarmList', '1494903887', '0');
+INSERT INTO `z_log` VALUES ('4355', 'admin', 'getAlarmList', '1494904033', '0');
+INSERT INTO `z_log` VALUES ('4356', 'admin', 'getAlarmList', '1494904036', '0');
+INSERT INTO `z_log` VALUES ('4357', 'admin', 'getAlarmList', '1494904039', '0');
+INSERT INTO `z_log` VALUES ('4358', 'admin', 'getAlarmList', '1494904042', '0');
+INSERT INTO `z_log` VALUES ('4359', 'admin', 'getAlarmList', '1494904343', '0');
+INSERT INTO `z_log` VALUES ('4360', 'admin', 'getAlarmList', '1494904644', '0');
+INSERT INTO `z_log` VALUES ('4361', 'admin', 'getAlarmList', '1494904945', '0');
+INSERT INTO `z_log` VALUES ('4362', 'admin', 'getAlarmList', '1494905246', '0');
+INSERT INTO `z_log` VALUES ('4363', 'admin', 'getAlarmList', '1494905547', '0');
+INSERT INTO `z_log` VALUES ('4364', 'admin', 'getAlarmList', '1494905848', '0');
+INSERT INTO `z_log` VALUES ('4365', 'admin', 'getAlarmList', '1494906149', '0');
+INSERT INTO `z_log` VALUES ('4366', 'admin', 'getAlarmList', '1494906450', '0');
+INSERT INTO `z_log` VALUES ('4367', 'admin', 'getAlarmList', '1494906751', '0');
+INSERT INTO `z_log` VALUES ('4368', 'admin', 'getAlarmList', '1494907052', '0');
+INSERT INTO `z_log` VALUES ('4369', 'admin', 'getAlarmList', '1494907353', '0');
+INSERT INTO `z_log` VALUES ('4370', 'admin', 'getAlarmList', '1494907654', '0');
+INSERT INTO `z_log` VALUES ('4371', 'admin', 'getAlarmList', '1494907955', '0');
+INSERT INTO `z_log` VALUES ('4372', 'admin', 'getAlarmList', '1494908256', '0');
+INSERT INTO `z_log` VALUES ('4373', 'admin', 'getAlarmList', '1494908557', '0');
+INSERT INTO `z_log` VALUES ('4374', 'admin', 'getAlarmList', '1494908858', '0');
+INSERT INTO `z_log` VALUES ('4375', 'admin', 'getAlarmList', '1494909159', '0');
+INSERT INTO `z_log` VALUES ('4376', 'admin', 'getAlarmList', '1494909460', '0');
+INSERT INTO `z_log` VALUES ('4377', 'admin', 'getAlarmList', '1494909761', '0');
+INSERT INTO `z_log` VALUES ('4378', 'admin', 'getAlarmList', '1494910062', '0');
+INSERT INTO `z_log` VALUES ('4379', 'admin', 'getAlarmList', '1494910363', '0');
+INSERT INTO `z_log` VALUES ('4380', 'admin', 'getAlarmList', '1494910664', '0');
+INSERT INTO `z_log` VALUES ('4381', 'admin', 'getAlarmList', '1494910965', '0');
+INSERT INTO `z_log` VALUES ('4382', 'admin', 'getAlarmList', '1494911266', '0');
+INSERT INTO `z_log` VALUES ('4383', 'admin', 'getAlarmList', '1494911567', '0');
+INSERT INTO `z_log` VALUES ('4384', 'admin', 'getAlarmList', '1494911868', '0');
+INSERT INTO `z_log` VALUES ('4385', 'admin', 'getAlarmList', '1494912169', '0');
+INSERT INTO `z_log` VALUES ('4386', 'admin', 'getAlarmList', '1494912470', '0');
+INSERT INTO `z_log` VALUES ('4387', 'admin', 'login', '1496730792', '0');
 
 -- ----------------------------
--- Table structure for z_operation
+-- Table structure for `z_operation`
 -- ----------------------------
 DROP TABLE IF EXISTS `z_operation`;
 CREATE TABLE `z_operation` (
@@ -4322,7 +4421,7 @@ INSERT INTO `z_operation` VALUES ('19', 'delGxHost', '删除光纤');
 INSERT INTO `z_operation` VALUES ('20', 'activeGxHost', '激活光纤');
 
 -- ----------------------------
--- Table structure for z_role
+-- Table structure for `z_role`
 -- ----------------------------
 DROP TABLE IF EXISTS `z_role`;
 CREATE TABLE `z_role` (
@@ -4339,7 +4438,7 @@ INSERT INTO `z_role` VALUES ('2', '管理员');
 INSERT INTO `z_role` VALUES ('3', '普通用户');
 
 -- ----------------------------
--- Table structure for z_role_authority
+-- Table structure for `z_role_authority`
 -- ----------------------------
 DROP TABLE IF EXISTS `z_role_authority`;
 CREATE TABLE `z_role_authority` (
@@ -4380,7 +4479,23 @@ INSERT INTO `z_role_authority` VALUES ('26', '2', '6');
 INSERT INTO `z_role_authority` VALUES ('27', '2', '16');
 
 -- ----------------------------
--- Table structure for z_user
+-- Table structure for `z_state`
+-- ----------------------------
+DROP TABLE IF EXISTS `z_state`;
+CREATE TABLE `z_state` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `time` bigint(20) NOT NULL,
+  `ack` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of z_state
+-- ----------------------------
+INSERT INTO `z_state` VALUES ('1', '1491100431', '0');
+
+-- ----------------------------
+-- Table structure for `z_user`
 -- ----------------------------
 DROP TABLE IF EXISTS `z_user`;
 CREATE TABLE `z_user` (
@@ -4406,7 +4521,7 @@ INSERT INTO `z_user` VALUES ('36', 'a', '321');
 INSERT INTO `z_user` VALUES ('38', 'd', '321');
 
 -- ----------------------------
--- Table structure for z_user_belong
+-- Table structure for `z_user_belong`
 -- ----------------------------
 DROP TABLE IF EXISTS `z_user_belong`;
 CREATE TABLE `z_user_belong` (
@@ -4432,7 +4547,7 @@ INSERT INTO `z_user_belong` VALUES ('16', '36', 'A总局');
 INSERT INTO `z_user_belong` VALUES ('18', '38', 'A总局');
 
 -- ----------------------------
--- Table structure for z_user_role
+-- Table structure for `z_user_role`
 -- ----------------------------
 DROP TABLE IF EXISTS `z_user_role`;
 CREATE TABLE `z_user_role` (
@@ -4458,7 +4573,7 @@ INSERT INTO `z_user_role` VALUES ('15', '36', '3');
 INSERT INTO `z_user_role` VALUES ('17', '38', '3');
 
 -- ----------------------------
--- Table structure for z_websocket_ctl
+-- Table structure for `z_websocket_ctl`
 -- ----------------------------
 DROP TABLE IF EXISTS `z_websocket_ctl`;
 CREATE TABLE `z_websocket_ctl` (
@@ -4473,40 +4588,62 @@ CREATE TABLE `z_websocket_ctl` (
 -- ----------------------------
 
 -- ----------------------------
--- View structure for v_alarm
+-- Table structure for `z_well`
+-- ----------------------------
+DROP TABLE IF EXISTS `z_well`;
+CREATE TABLE `z_well` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `host_id` bigint(20) NOT NULL,
+  `name` varchar(100) DEFAULT '',
+  `location` varchar(200) NOT NULL,
+  `lat` varchar(20) DEFAULT '',
+  `lon` varchar(20) DEFAULT '',
+  `distance` int(11) NOT NULL,
+  `create_time` bigint(11) NOT NULL,
+  `range` int(11) DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of z_well
+-- ----------------------------
+INSERT INTO `z_well` VALUES ('1', '1', '', '鞍山道公安局楼下', '', '', '21000', '1496717499', '500');
+INSERT INTO `z_well` VALUES ('2', '2', '', '侯台公安局楼下（碧水家园对面）', '', '', '500', '1496717499', '600');
+INSERT INTO `z_well` VALUES ('3', '8', '', '开发区公安局楼下（泰达MSD边上）', '', '', '72000', '1496717499', '700');
+INSERT INTO `z_well` VALUES ('4', '5', '', '滨海新区公安局院内（永丰街23号）', '', '', '85000', '1496717499', '800');
+
+-- ----------------------------
+-- View structure for `v_alarm`
 -- ----------------------------
 DROP VIEW IF EXISTS `v_alarm`;
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost`  VIEW `v_alarm` AS select a.*,date_format(from_unixtime(a.occur_time),'%Y-%m-%d %H:%i:%S') as vtime from z_alarm a ;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_alarm` AS select `a`.`id` AS `id`,`a`.`occur_time` AS `occur_time`,`a`.`distance` AS `distance`,`a`.`description` AS `description`,`a`.`level` AS `level`,`a`.`ack` AS `ack`,`a`.`last_time` AS `last_time`,`a`.`host` AS `host`,date_format(from_unixtime(`a`.`occur_time`),'%Y-%m-%d %H:%i:%S') AS `vtime`,coalesce(`w`.`location`,'没有对应井位') AS `location`,coalesce(`w`.`name`,'没有对应井位名') AS `name` from ((`z_alarm` `a` left join `z_gx_host` `gh` on((`a`.`host` = `gh`.`host`))) left join `z_well` `w` on(((`w`.`host_id` = `gh`.`id`) and (`a`.`distance` between (`w`.`distance` - `w`.`range`) and (`w`.`distance` + `w`.`range`))))) ;
 
 -- ----------------------------
--- View structure for v_exception
+-- View structure for `v_exception`
 -- ----------------------------
 DROP VIEW IF EXISTS `v_exception`;
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost`  VIEW `v_exception` AS select e.*,date_format(from_unixtime(e.time),'%Y-%m-%d %H:%i:%S') as vtime from z_exception e ;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_exception` AS select `e`.`id` AS `id`,`e`.`time` AS `time`,`e`.`ack` AS `ack`,`e`.`description` AS `description`,`e`.`host` AS `host`,date_format(from_unixtime(`e`.`time`),'%Y-%m-%d %H:%i:%S') AS `vtime` from `z_exception` `e` ;
 
 -- ----------------------------
--- View structure for v_log
+-- View structure for `v_log`
 -- ----------------------------
 DROP VIEW IF EXISTS `v_log`;
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost`  VIEW `v_log` AS select l.*,date_format(from_unixtime(time),'%Y-%m-%d %H:%i:%S') as vtime,(select o.name from z_operation  o where o.operation = l.operation) AS name from z_log l ;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_log` AS select `l`.`id` AS `id`,`l`.`username` AS `username`,`l`.`operation` AS `operation`,`l`.`time` AS `time`,`l`.`data_id` AS `data_id`,date_format(from_unixtime(`l`.`time`),'%Y-%m-%d %H:%i:%S') AS `vtime`,(select `o`.`name` from `z_operation` `o` where (`o`.`operation` = `l`.`operation`)) AS `name` from `z_log` `l` ;
 
 -- ----------------------------
--- View structure for v_ra
+-- View structure for `v_ra`
 -- ----------------------------
 DROP VIEW IF EXISTS `v_ra`;
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost`  VIEW `v_ra` AS select r.id as rid,r.role,a.id as aid,a.action,a.alias
-		from z_role r,z_authority a,z_role_authority ra
-			where r.id=ra.role_id and a.id=ra.authority_id ;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_ra` AS select `r`.`id` AS `rid`,`r`.`role` AS `role`,`a`.`id` AS `aid`,`a`.`action` AS `action`,`a`.`alias` AS `alias` from ((`z_role` `r` join `z_authority` `a`) join `z_role_authority` `ra`) where ((`r`.`id` = `ra`.`role_id`) and (`a`.`id` = `ra`.`authority_id`)) ;
 
 -- ----------------------------
--- View structure for v_ur
+-- View structure for `v_state`
+-- ----------------------------
+DROP VIEW IF EXISTS `v_state`;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_state` AS select `s`.`id` AS `id`,`s`.`time` AS `time`,`s`.`ack` AS `ack`,date_format(from_unixtime(`s`.`time`),'%Y-%m-%d %H:%i:%S') AS `vtime` from `z_state` `s` ;
+
+-- ----------------------------
+-- View structure for `v_ur`
 -- ----------------------------
 DROP VIEW IF EXISTS `v_ur`;
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER  VIEW `v_ur` AS SELECT
-u.id AS uid,
-u.username AS username,
-r.id AS rid,
-r.role AS role,
-ub.belong AS belong
-from (((`z_user` `u` join `z_role` `r`) join `z_user_role` `ur`) join `z_user_belong` ub)
-where ((`u`.`id` = `ur`.`user_id`) and (`r`.`id` = `ur`.`role_id`)and (`u`.id=`ub`.user_id)) ;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_ur` AS select `u`.`id` AS `uid`,`u`.`username` AS `username`,`r`.`id` AS `rid`,`r`.`role` AS `role`,`ub`.`belong` AS `belong` from (((`z_user` `u` join `z_role` `r`) join `z_user_role` `ur`) join `z_user_belong` `ub`) where ((`u`.`id` = `ur`.`user_id`) and (`r`.`id` = `ur`.`role_id`) and (`u`.`id` = `ub`.`user_id`)) ;
