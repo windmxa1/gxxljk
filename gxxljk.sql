@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50535
 File Encoding         : 65001
 
-Date: 2017-06-06 14:48:21
+Date: 2017-06-07 10:24:00
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -34,22 +34,22 @@ CREATE TABLE `z_alarm` (
 -- ----------------------------
 -- Records of z_alarm
 -- ----------------------------
-INSERT INTO `z_alarm` VALUES ('324', '1491321600', '874', 'alarm', '1', '0', '18', 'localhost');
-INSERT INTO `z_alarm` VALUES ('325', '1491408000', '874', 'alarm', '1', '0', '18', 'localhost');
-INSERT INTO `z_alarm` VALUES ('326', '1491494400', '874', 'alarm', '1', '0', '18', 'localhost');
-INSERT INTO `z_alarm` VALUES ('327', '1491580800', '874', 'alarm', '1', '0', '18', 'localhost');
-INSERT INTO `z_alarm` VALUES ('328', '1491667200', '874', 'alarm', '1', '0', '18', 'localhost');
-INSERT INTO `z_alarm` VALUES ('329', '1491321600', '874', 'alarm', '1', '0', '18', 'localhost');
+INSERT INTO `z_alarm` VALUES ('324', '1491321600', '874', 'alarm', '1', '1', '18', 'localhost');
+INSERT INTO `z_alarm` VALUES ('325', '1491408000', '874', 'alarm', '1', '1', '18', 'localhost');
+INSERT INTO `z_alarm` VALUES ('326', '1491494400', '874', 'alarm', '1', '1', '18', 'localhost');
+INSERT INTO `z_alarm` VALUES ('327', '1491580800', '874', 'alarm', '1', '1', '18', 'localhost');
+INSERT INTO `z_alarm` VALUES ('328', '1491667200', '874', 'alarm', '1', '1', '18', 'localhost');
+INSERT INTO `z_alarm` VALUES ('329', '1491321600', '874', 'alarm', '1', '1', '18', 'localhost');
 INSERT INTO `z_alarm` VALUES ('330', '1491408000', '874', 'alarm', '1', '1', '18', 'localhost');
 INSERT INTO `z_alarm` VALUES ('331', '1491494400', '874', 'alarm', '1', '1', '18', 'localhost');
 INSERT INTO `z_alarm` VALUES ('332', '1491580800', '874', 'alarm', '1', '1', '18', 'localhost');
 INSERT INTO `z_alarm` VALUES ('333', '1491667200', '874', 'alarm', '1', '1', '18', 'localhost');
-INSERT INTO `z_alarm` VALUES ('334', '1491321600', '874', 'alarm', '1', '0', '18', 'localhost');
+INSERT INTO `z_alarm` VALUES ('334', '1491321600', '874', 'alarm', '1', '1', '18', 'localhost');
 INSERT INTO `z_alarm` VALUES ('335', '1491408000', '874', 'alarm', '1', '1', '18', 'localhost');
 INSERT INTO `z_alarm` VALUES ('336', '1491494400', '874', 'alarm', '1', '1', '18', 'localhost');
 INSERT INTO `z_alarm` VALUES ('337', '1491580800', '874', 'alarm', '1', '1', '18', 'localhost');
 INSERT INTO `z_alarm` VALUES ('338', '1491667200', '874', 'alarm', '1', '1', '18', 'localhost');
-INSERT INTO `z_alarm` VALUES ('339', '1491321600', '874', 'alarm', '1', '0', '18', 'localhost');
+INSERT INTO `z_alarm` VALUES ('339', '1491321600', '874', 'alarm', '1', '1', '18', 'localhost');
 INSERT INTO `z_alarm` VALUES ('340', '1491408000', '874', 'alarm', '1', '1', '18', 'localhost');
 INSERT INTO `z_alarm` VALUES ('341', '1491494400', '874', 'alarm', '1', '1', '18', 'localhost');
 INSERT INTO `z_alarm` VALUES ('342', '1491580800', '874', 'alarm', '1', '1', '18', 'localhost');
@@ -83,12 +83,12 @@ INSERT INTO `z_alarm` VALUES ('369', '1491321600', '874', 'alarm', '1', '0', '18
 INSERT INTO `z_alarm` VALUES ('370', '1491408000', '874', 'alarm', '1', '1', '18', 'localhost');
 INSERT INTO `z_alarm` VALUES ('371', '1491494400', '874', 'alarm', '1', '1', '18', 'localhost');
 INSERT INTO `z_alarm` VALUES ('372', '1491580800', '874', 'alarm', '1', '1', '18', 'localhost');
-INSERT INTO `z_alarm` VALUES ('373', '1491667200', '874', 'alarm', '1', '0', '18', 'localhost');
-INSERT INTO `z_alarm` VALUES ('374', '1492567171', '874', '轻微触碰光缆或触碰光缆', '1', '0', '18', '192.168.0.1');
-INSERT INTO `z_alarm` VALUES ('377', '1492657020', '874', '轻微触碰光缆或触碰光缆', '1', '0', '18', '192.168.199.127');
-INSERT INTO `z_alarm` VALUES ('378', '1492657031', '874', '轻微触碰光缆或触碰光缆', '1', '0', '18', '192.168.199.127');
-INSERT INTO `z_alarm` VALUES ('379', '1492666627', '874', '轻微触碰光缆或触碰光缆', '1', '0', '18', '192.168.199.127');
-INSERT INTO `z_alarm` VALUES ('380', '1492694827', '874', '轻微触碰光缆或触碰光缆', '1', '0', '18', '192.168.199.127');
+INSERT INTO `z_alarm` VALUES ('373', '1491667200', '874', 'alarm', '1', '1', '18', 'localhost');
+INSERT INTO `z_alarm` VALUES ('374', '1492567171', '874', '轻微触碰光缆或触碰光缆', '1', '1', '18', '192.168.0.1');
+INSERT INTO `z_alarm` VALUES ('377', '1492657020', '874', '轻微触碰光缆或触碰光缆', '1', '1', '18', '192.168.199.127');
+INSERT INTO `z_alarm` VALUES ('378', '1492657031', '874', '轻微触碰光缆或触碰光缆', '1', '1', '18', '192.168.199.127');
+INSERT INTO `z_alarm` VALUES ('379', '1492666627', '874', '轻微触碰光缆或触碰光缆', '1', '1', '18', '192.168.199.127');
+INSERT INTO `z_alarm` VALUES ('380', '1492694827', '874', '轻微触碰光缆或触碰光缆', '1', '1', '18', '192.168.199.127');
 INSERT INTO `z_alarm` VALUES ('381', '1492694830', '874', '轻微触碰光缆或触碰光缆', '1', '0', '18', '192.168.199.127');
 INSERT INTO `z_alarm` VALUES ('382', '1492694831', '874', '轻微触碰光缆或触碰光缆', '1', '0', '18', '192.168.199.127');
 INSERT INTO `z_alarm` VALUES ('383', '1492694832', '874', '轻微触碰光缆或触碰光缆', '1', '0', '18', '192.168.199.127');
@@ -1698,7 +1698,7 @@ CREATE TABLE `z_log` (
   `time` bigint(20) NOT NULL,
   `data_id` bigint(20) DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4388 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4389 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of z_log
@@ -4384,6 +4384,7 @@ INSERT INTO `z_log` VALUES ('4384', 'admin', 'getAlarmList', '1494911868', '0');
 INSERT INTO `z_log` VALUES ('4385', 'admin', 'getAlarmList', '1494912169', '0');
 INSERT INTO `z_log` VALUES ('4386', 'admin', 'getAlarmList', '1494912470', '0');
 INSERT INTO `z_log` VALUES ('4387', 'admin', 'login', '1496730792', '0');
+INSERT INTO `z_log` VALUES ('4388', 'admin', 'login', '1496800884', '0');
 
 -- ----------------------------
 -- Table structure for `z_operation`
@@ -4602,7 +4603,7 @@ CREATE TABLE `z_well` (
   `create_time` bigint(11) NOT NULL,
   `range` int(11) DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of z_well

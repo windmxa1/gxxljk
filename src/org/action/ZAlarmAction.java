@@ -23,6 +23,7 @@ import org.model.ZUser;
 import org.tools.Constans;
 import org.tools.PDFUtil;
 import org.tools.R;
+import org.tools.Utils;
 import org.view.VAlarmId;
 
 import com.opensymphony.xwork2.ActionContext;
@@ -76,21 +77,6 @@ public class ZAlarmAction extends ActionSupport {
 	}
 
 	/**
-	 * 判断是否为总局工作人员
-	 * 
-	 * @param userid
-	 */
-	private boolean isCentral(Long userid) {
-		ZUserDao uDao = new ZUserDaoImp();
-		if (uDao.getUserBelong(userid).contains("总局")) {
-			// System.out.println("总局人员");
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	/**
 	 * 2.获取报警列表
 	 */
 	public String getAlarmList() {
@@ -111,11 +97,11 @@ public class ZAlarmAction extends ActionSupport {
 				session.setAttribute("end_time_a", end_time);
 				session.setAttribute("start_time_a", start_time);
 			}
-			// boolean isCentral = isCentral(user.getId());
+			boolean isCentral = Utils.isCentral(user.getId());
 			if (start_time == null || end_time == null) {
 				long count;
 				List list;
-				if (isCentral(user.getId())) {
+				if (isCentral) {
 					count = aDao.getCount(type);
 					list = aDao.getAlarmList(start, limit, type);
 				} else {
@@ -138,7 +124,7 @@ public class ZAlarmAction extends ActionSupport {
 					// }
 					List<VAlarmId> list;
 					Long count;
-					if (isCentral(user.getId())) {
+					if (isCentral) {
 						list = aDao.getAlarmList(start, limit, type,
 								start_time, end_time);
 						count = aDao.getAlarmCount(type, start_time, end_time);
@@ -206,25 +192,37 @@ public class ZAlarmAction extends ActionSupport {
 							"自动断开前一次的连接，当前连接数为：" + connectCount, "");
 					break;
 				}
-				List<VAlarmId> unAckList = (List<VAlarmId>) session1
+				List<Long> unAckList = (List<Long>) session1
 						.getAttribute("UnACKAlarm");
-				List<VAlarmId> unAckList2;
-				if (isCentral(user.getId())) {
-					unAckList2 = aDao.getUnACKAlarmList();
+				List<Long> unAckList2;
+				Boolean isCentral = Utils.isCentral(user.getId());
+				if (isCentral) {
+					unAckList2 = aDao.getUnACKAlarmIds();
 				} else {
-					unAckList2 = aDao.getUnACKAlarmList(user.getId());
+					unAckList2 = aDao.getUnACKAlarmIds(user.getId());
 				}
 				if (unAckList == null) {// 缓存数组为空，说明之前一个报警都没有，所以要提示报警,并且设置值
 					if (unAckList2 != null && unAckList2.size() > 0) {
+						Set<String> wellList = null;
+						if (isCentral) {
+							wellList = aDao.getUnACKWell();
+						} else {
+							wellList = aDao.getUnACKWell(user.getId());
+						}
 						session1.setAttribute("UnACKAlarm", unAckList2);
-						result = R.getJson(1, "请注意，线路安全告警！", unAckList2);
+						result = R.getJson(1, "请注意，线路安全告警！", wellList);
 						break;
 					}
 				} else {// 如果有缓存数组,缓存数组没有全包含报警数组，说明有新报警所以要提示报警
 					if (!unAckList.containsAll(unAckList2)) {
-						System.out.println("有新的报警记录");
+						Set<String> wellList = null;
+						if (isCentral) {
+							wellList = aDao.getUnACKWell();
+						} else {
+							wellList = aDao.getUnACKWell(user.getId());
+						}
 						session1.setAttribute("UnACKAlarm", unAckList2);
-						result = R.getJson(1, "请注意，线路安全告警！", unAckList2);
+						result = R.getJson(1, "请注意，线路安全告警！", wellList);
 						break;
 					}
 				}
@@ -262,7 +260,8 @@ public class ZAlarmAction extends ActionSupport {
 			return SUCCESS;
 		}
 		List list;
-		if (isCentral(user.getId())) {
+		Boolean isCentral = Utils.isCentral(user.getId());
+		if (isCentral) {
 			list = aDao.getUnACKAlarmList();
 		} else {
 			list = aDao.getUnACKAlarmList(user.getId());
@@ -296,7 +295,8 @@ public class ZAlarmAction extends ActionSupport {
 				end_clock = calendar.getTimeInMillis();
 				// }
 			}
-			if (isCentral(user.getId())) {
+			Boolean isCentral = Utils.isCentral(user.getId());
+			if (isCentral) {
 				if (aDao.deleteAlarm(start_clock / 1000, end_clock / 1000)) {
 					result = R.getJson(1, "删除成功", "");
 				} else {
@@ -326,9 +326,10 @@ public class ZAlarmAction extends ActionSupport {
 		Map<String, Object> session1 = ActionContext.getContext().getSession();
 		ZUser user = (ZUser) session1.get("user");
 		try {
+			Boolean isCentral = Utils.isCentral(user.getId());
 			if (start_time == null || end_time == null) {
 				List list;
-				if (isCentral(user.getId())) {
+				if (isCentral) {
 					list = aDao.getAlarmList(start, limit, type);
 				} else {
 					list = aDao.getAlarmList(start, limit, type, user.getId());
@@ -348,7 +349,7 @@ public class ZAlarmAction extends ActionSupport {
 					end_time = sdf.format(calendar.getTime());
 					// }
 					List<VAlarmId> list;
-					if (isCentral(user.getId())) {
+					if (isCentral) {
 						list = aDao.getAlarmList(0, 200, type, start_time,
 								end_time);
 					} else {
