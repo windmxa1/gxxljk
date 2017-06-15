@@ -94,8 +94,8 @@ public class MyThread extends Thread {
 
 				out.writeInt(json.getBytes().length);
 				// 在WINDOWS上不能转换成UTF-8，会导致发送中文数据时数据长度不对，程序崩溃
-//				 out.write(json.getBytes("UTF-8"));
-				out.write(json.getBytes());
+				 out.write(json.getBytes("UTF-8"));
+//				out.write(json.getBytes());
 				out.flush();
 				Thread.sleep(10 * 1000);
 			}

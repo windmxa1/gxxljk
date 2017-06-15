@@ -178,8 +178,8 @@ public class ZGxHostDaoImp implements ZGxHostDao {
 	public List<ZGxHost> getAllList(Integer start, Integer limit, Long userid) {
 		try {
 			Session session = HibernateSessionFactory.getSession();
-			Query query = session
-					.createQuery("select gh.* from ZGxHost gh,ZUserBelong ub where gh.belong=ub.belong and ub.userid = ?");
+			SQLQuery query = session
+					.createSQLQuery("select gh.* from z_gx_host gh,z_user_belong ub where gh.belong=ub.belong and ub.user_id = ?");
 			if (start == null) {
 				start = 0;
 			}
@@ -191,6 +191,7 @@ public class ZGxHostDaoImp implements ZGxHostDao {
 				query.setMaxResults(limit);
 			}
 			query.setParameter(0, userid);
+			query.addEntity(ZGxHost.class);
 			List<ZGxHost> list = query.list();
 			return list;
 		} catch (Exception e) {
@@ -206,7 +207,7 @@ public class ZGxHostDaoImp implements ZGxHostDao {
 		try {
 			Session session = HibernateSessionFactory.getSession();
 			Query query = session
-					.createQuery("select count(id) from ZGxHost gh,ZUserBelong ub where gh.belong=ub.belong and ub.userid = ?");
+					.createQuery("select count(gh.id) from ZGxHost gh,ZUserBelong ub where gh.belong=ub.belong and ub.userId = ?");
 			query.setMaxResults(1);
 			query.setParameter(0, userid);
 			Long count = (Long) query.uniqueResult();

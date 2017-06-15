@@ -509,6 +509,7 @@ public class ZAlarmDaoImp implements ZAlarmDao {
 			Session session = HibernateSessionFactory.getSession();
 			String sql = "select v.id.location from VAlarm v where v.id.ack = 0 and v.id.host in( select gh.host from ZGxHost gh, ZUserBelong ub where gh.belong = ub.belong and ub.userId=?)";
 			Query query = session.createQuery(sql);
+			query.setParameter(0, userid);
 			List<String> list = (List<String>) query.list();
 			Set<String> set = new HashSet<>();
 			set.addAll(list);
