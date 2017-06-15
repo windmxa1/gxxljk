@@ -9,14 +9,13 @@ public class ZWell implements java.io.Serializable {
 	// Fields
 
 	private Long id;
-	private Long hostId;
 	private String name;
 	private String location;
 	private String lat;
 	private String lon;
-	private Integer distance;
+	private Integer beginDistance;
+	private Integer endDistance;
 	private Long createTime;
-	private Integer range;
 
 	// Constructors
 
@@ -25,24 +24,24 @@ public class ZWell implements java.io.Serializable {
 	}
 
 	/** minimal constructor */
-	public ZWell(Long hostId, String location, Integer distance, Long createTime) {
-		this.hostId = hostId;
+	public ZWell(String location, Integer beginDistance, Integer endDistance,
+			Long createTime) {
 		this.location = location;
-		this.distance = distance;
+		this.beginDistance = beginDistance;
+		this.endDistance = endDistance;
 		this.createTime = createTime;
 	}
 
 	/** full constructor */
-	public ZWell(Long hostId, String name, String location, String lat,
-			String lon, Integer distance, Long createTime, Integer range) {
-		this.hostId = hostId;
+	public ZWell(String name, String location, String lat, String lon,
+			Integer beginDistance, Integer endDistance, Long createTime) {
 		this.name = name;
 		this.location = location;
 		this.lat = lat;
 		this.lon = lon;
-		this.distance = distance;
+		this.beginDistance = beginDistance;
+		this.endDistance = endDistance;
 		this.createTime = createTime;
-		this.range = range;
 	}
 
 	// Property accessors
@@ -53,14 +52,6 @@ public class ZWell implements java.io.Serializable {
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public Long getHostId() {
-		return this.hostId;
-	}
-
-	public void setHostId(Long hostId) {
-		this.hostId = hostId;
 	}
 
 	public String getName() {
@@ -95,12 +86,20 @@ public class ZWell implements java.io.Serializable {
 		this.lon = lon;
 	}
 
-	public Integer getDistance() {
-		return this.distance;
+	public Integer getBeginDistance() {
+		return this.beginDistance;
 	}
 
-	public void setDistance(Integer distance) {
-		this.distance = distance;
+	public void setBeginDistance(Integer beginDistance) {
+		this.beginDistance = beginDistance;
+	}
+
+	public Integer getEndDistance() {
+		return this.endDistance;
+	}
+
+	public void setEndDistance(Integer endDistance) {
+		this.endDistance = endDistance;
 	}
 
 	public Long getCreateTime() {
@@ -109,14 +108,6 @@ public class ZWell implements java.io.Serializable {
 
 	public void setCreateTime(Long createTime) {
 		this.createTime = createTime;
-	}
-
-	public Integer getRange() {
-		return this.range;
-	}
-
-	public void setRange(Integer range) {
-		this.range = range;
 	}
 
 }

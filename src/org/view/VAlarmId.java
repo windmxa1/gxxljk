@@ -17,8 +17,7 @@ public class VAlarmId implements java.io.Serializable {
 	private String lastTime;
 	private String host;
 	private String vtime;
-	private String location;
-	private String name;
+	private String latlon;
 
 	// Constructors
 
@@ -43,7 +42,7 @@ public class VAlarmId implements java.io.Serializable {
 	/** full constructor */
 	public VAlarmId(Long id, Long occurTime, String distance,
 			String description, String level, Integer ack, String lastTime,
-			String host, String vtime, String location, String name) {
+			String host, String vtime, String latlon) {
 		this.id = id;
 		this.occurTime = occurTime;
 		this.distance = distance;
@@ -53,8 +52,7 @@ public class VAlarmId implements java.io.Serializable {
 		this.lastTime = lastTime;
 		this.host = host;
 		this.vtime = vtime;
-		this.location = location;
-		this.name = name;
+		this.latlon = latlon;
 	}
 
 	// Property accessors
@@ -131,20 +129,12 @@ public class VAlarmId implements java.io.Serializable {
 		this.vtime = vtime;
 	}
 
-	public String getLocation() {
-		return this.location;
+	public String getLatlon() {
+		return this.latlon;
 	}
 
-	public void setLocation(String location) {
-		this.location = location;
-	}
-
-	public String getName() {
-		return this.name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
+	public void setLatlon(String latlon) {
+		this.latlon = latlon;
 	}
 
 	public boolean equals(Object other) {
@@ -187,13 +177,9 @@ public class VAlarmId implements java.io.Serializable {
 				&& ((this.getVtime() == castOther.getVtime()) || (this
 						.getVtime() != null && castOther.getVtime() != null && this
 						.getVtime().equals(castOther.getVtime())))
-				&& ((this.getLocation() == castOther.getLocation()) || (this
-						.getLocation() != null
-						&& castOther.getLocation() != null && this
-						.getLocation().equals(castOther.getLocation())))
-				&& ((this.getName() == castOther.getName()) || (this.getName() != null
-						&& castOther.getName() != null && this.getName()
-						.equals(castOther.getName())));
+				&& ((this.getLatlon() == castOther.getLatlon()) || (this
+						.getLatlon() != null && castOther.getLatlon() != null && this
+						.getLatlon().equals(castOther.getLatlon())));
 	}
 
 	public int hashCode() {
@@ -219,9 +205,7 @@ public class VAlarmId implements java.io.Serializable {
 		result = 37 * result
 				+ (getVtime() == null ? 0 : this.getVtime().hashCode());
 		result = 37 * result
-				+ (getLocation() == null ? 0 : this.getLocation().hashCode());
-		result = 37 * result
-				+ (getName() == null ? 0 : this.getName().hashCode());
+				+ (getLatlon() == null ? 0 : this.getLatlon().hashCode());
 		return result;
 	}
 

@@ -61,6 +61,25 @@ public class ZAlarmDaoImp implements ZAlarmDao {
 	}
 
 	@Override
+	public boolean updateAllAck() {
+		try {
+			Session session = HibernateSessionFactory.getSession();
+			Transaction ts = session.beginTransaction();
+			SQLQuery sqlQuery = session
+					.createSQLQuery("update z_alarm set ack=1 where ack=0");
+			sqlQuery.executeUpdate();
+			ts.commit();
+			return true;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		} finally {
+			HibernateSessionFactory.closeSession();
+		}
+	}
+
+	@Override
 	public List getAlarmList(Integer start, Integer limit, Integer type,
 			Long userid) {
 		try {
@@ -503,11 +522,48 @@ public class ZAlarmDaoImp implements ZAlarmDao {
 		}
 	}
 
+//	@Override
+//	public Set<String> getUnACKWell(Long userid) {
+//		try {
+//			Session session = HibernateSessionFactory.getSession();
+//			String sql = "select v.id.location from VAlarm v where v.id.ack = 0 and v.id.host in( select gh.host from ZGxHost gh, ZUserBelong ub where gh.belong = ub.belong and ub.userId=?)";
+//			Query query = session.createQuery(sql);
+//			query.setParameter(0, userid);
+//			List<String> list = (List<String>) query.list();
+//			Set<String> set = new HashSet<>();
+//			set.addAll(list);
+//			return set;
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			return null;
+//		} finally {
+//			HibernateSessionFactory.closeSession();
+//		}
+//	}
+//
+//	@Override
+//	public Set<String> getUnACKWell() {
+//		try {
+//			Session session = HibernateSessionFactory.getSession();
+//			String sql = "select v.id.location from VAlarm v where v.id.ack = 0 ";
+//			Query query = session.createQuery(sql);
+//			List<String> list = (List<String>) query.list();
+//			Set<String> set = new HashSet<>();
+//			set.addAll(list);
+//			return set;
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			return null;
+//		} finally {
+//			HibernateSessionFactory.closeSession();
+//		}
+//	}
+
 	@Override
-	public Set<String> getUnACKWell(Long userid) {
+	public Set<String> getUnACKWellLatLon(Long userid) {
 		try {
 			Session session = HibernateSessionFactory.getSession();
-			String sql = "select v.id.location from VAlarm v where v.id.ack = 0 and v.id.host in( select gh.host from ZGxHost gh, ZUserBelong ub where gh.belong = ub.belong and ub.userId=?)";
+			String sql = "select v.id.latlon from VAlarm v where v.id.ack = 0 and v.id.host in( select gh.host from ZGxHost gh, ZUserBelong ub where gh.belong = ub.belong and ub.userId=?)";
 			Query query = session.createQuery(sql);
 			query.setParameter(0, userid);
 			List<String> list = (List<String>) query.list();
@@ -523,10 +579,10 @@ public class ZAlarmDaoImp implements ZAlarmDao {
 	}
 
 	@Override
-	public Set<String> getUnACKWell() {
+	public Set<String> getUnACKWellLatLon() {
 		try {
 			Session session = HibernateSessionFactory.getSession();
-			String sql = "select v.id.location from VAlarm v where v.id.ack = 0 ";
+			String sql = "select v.id.latlon from VAlarm v where v.id.ack = 0 ";
 			Query query = session.createQuery(sql);
 			List<String> list = (List<String>) query.list();
 			Set<String> set = new HashSet<>();

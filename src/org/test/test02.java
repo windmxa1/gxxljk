@@ -19,6 +19,8 @@ public class test02 {
 		List<ZAlarm> list2 = aDao.getAlarmList(0, 5, 0);
 		
 		System.out.println(list1.containsAll(list2));
+		
+		System.out.println(System.currentTimeMillis());
 
 	}
 }

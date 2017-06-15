@@ -81,11 +81,12 @@ public class ZUserAction extends ActionSupport {
 		Map<String, Object> session = ActionContext.getContext().getSession();
 		HttpSession session1 = ServletActionContext.getRequest().getSession();
 		session.clear();
-		session1.removeAttribute("user");
-		session1.removeAttribute("start_time");
-		session1.removeAttribute("end_time");
-		session1.removeAttribute("UnACKException");
-		session1.removeAttribute("UnACKAlarm");
+		session1.invalidate();
+//		session1.removeAttribute("user");
+//		session1.removeAttribute("start_time");
+//		session1.removeAttribute("end_time");
+//		session1.removeAttribute("UnACKException");
+//		session1.removeAttribute("UnACKAlarm");
 		result = R.getJson(1, "", "");
 		return SUCCESS;
 	}

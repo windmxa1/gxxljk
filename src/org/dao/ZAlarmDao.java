@@ -24,6 +24,12 @@ public interface ZAlarmDao {
 	public boolean updateAck(long id);
 
 	/**
+	 * 2.1一键确认全部
+	 * @return
+	 */
+	public boolean updateAllAck();
+	
+	/**
 	 * 3.获取所有报警列表
 	 * 
 	 * @param type
@@ -53,12 +59,18 @@ public interface ZAlarmDao {
 
 	public List<Long> getUnACKAlarmIds();
 
+	// /**
+	// * 6.1.获取未确认报警的井位地址
+	// */
+//	public Set<String> getUnACKWell(Long userid);
+//
+//	public Set<String> getUnACKWell();
 	/**
-	 * 6.获取未确认报警的井位地址
+	 * 6.获取未确认报警的井位经纬度 
 	 */
-	public Set<String> getUnACKWell(Long userid);
-
-	public Set<String> getUnACKWell();
+	public Set<String> getUnACKWellLatLon(Long userid);
+	
+	public Set<String> getUnACKWellLatLon();
 
 	/**
 	 * 7.获取所有未确认的告警列表

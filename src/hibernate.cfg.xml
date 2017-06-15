@@ -37,6 +37,8 @@
 	<mapping resource="org/model/ZWebsocketCtl.hbm.xml" />
 	<mapping resource="org/model/ZAlarmDesc.hbm.xml" />
 	<mapping resource="org/model/ZWell.hbm.xml" />
+	<mapping resource="org/model/ZHostWell.hbm.xml" />
+	<mapping resource="org/view/VWell.hbm.xml" />
 
 </session-factory>
 

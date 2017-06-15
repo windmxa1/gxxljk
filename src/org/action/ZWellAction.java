@@ -22,7 +22,7 @@ public class ZWellAction extends ActionSupport {
 	private Long id;
 	private Long hostId;
 	private String location;
-	private Integer distance;
+	private Integer begin_distance, end_distance;
 	private String name;
 	private String lat;
 	private String lon;
@@ -41,8 +41,8 @@ public class ZWellAction extends ActionSupport {
 
 	public String addWell() {
 		zwDao = new ZWellDaoImp();
-		ZWell zWell = new ZWell(hostId, name, location, lat, lon, distance,
-				System.currentTimeMillis() / 1000, range);
+		ZWell zWell = new ZWell(name, location, lat, lon, begin_distance,
+				end_distance, System.currentTimeMillis() / 1000);
 		if (zwDao.saveOrUpdate(zWell) > 0) {
 			result = R.getJson(1, "添加成功", "");
 		} else {
@@ -53,8 +53,8 @@ public class ZWellAction extends ActionSupport {
 
 	public String updateWell() {
 		zwDao = new ZWellDaoImp();
-		ZWell zWell = new ZWell(hostId, name, location, lat, lon, distance,
-				System.currentTimeMillis() / 1000, range);
+		ZWell zWell = new ZWell(name, location, lat, lon, begin_distance,
+				end_distance, System.currentTimeMillis() / 1000);
 		zWell.setId(id);
 		if (zwDao.saveOrUpdate(zWell) == 0) {
 			result = R.getJson(1, "修改成功", "");
@@ -156,12 +156,20 @@ public class ZWellAction extends ActionSupport {
 		this.location = location;
 	}
 
-	public Integer getDistance() {
-		return distance;
+	public Integer getBegin_distance() {
+		return begin_distance;
 	}
 
-	public void setDistance(Integer distance) {
-		this.distance = distance;
+	public void setBegin_distance(Integer begin_distance) {
+		this.begin_distance = begin_distance;
+	}
+
+	public Integer getEnd_distance() {
+		return end_distance;
+	}
+
+	public void setEnd_distance(Integer end_distance) {
+		this.end_distance = end_distance;
 	}
 
 	public String getName() {

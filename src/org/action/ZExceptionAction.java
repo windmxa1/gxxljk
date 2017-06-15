@@ -53,6 +53,19 @@ public class ZExceptionAction extends ActionSupport {
 	}
 
 	/**
+	 * 一键确认异常
+	 * @return
+	 */
+	public String ackAllException(){
+		ZExceptionDao eDao = new ZExceptionDaoImp();
+		if(eDao.updateAllAck())
+			result = R.getJson(1, "一键确认异常成功", true);
+		else
+			result = R.getJson(0, "一键确认异常失败", false);
+		return SUCCESS;
+	}
+	
+	/**
 	 * 判断是否为总局工作人员
 	 * 
 	 * @param userid

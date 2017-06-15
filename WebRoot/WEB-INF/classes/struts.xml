@@ -71,6 +71,8 @@
 				<param name="root">result</param>
 			</result>
 		</action>
+		
+		
 
 		<!-- Exception -->
 		<action name="ackException" class="org.action.ZExceptionAction"
@@ -97,6 +99,7 @@
 				<param name="root">result</param>
 			</result>
 		</action>
+		
 		<!-- Exception -->
 		
 		<!-- Log -->
@@ -156,6 +159,12 @@
 				<param name="root">result</param>
 			</result>
 		</action>
+		<action name="checkAlarmForLatLon" class="org.action.ZAlarmAction"
+			method="checkAlarmForLatLon">
+			<result type="json" name="success">
+				<param name="root">result</param>
+			</result>
+		</action>
 		<action name="getLatestAlarm" class="org.action.ZAlarmAction"
 			method="getLatestAlarm">
 			<result type="json" name="success">
@@ -194,6 +203,16 @@
 		</action>
 		<action name="getSession" class="org.action.ZUserAction"
 			method="getSession">
+			<result type="json" name="success">
+				<param name="root">result</param>
+			</result>
+		</action>
+		<action name="ackAllAlarm" class="org.action.ZAlarmAction" method="ackAllAlarm">
+			<result type="json" name="success">
+				<param name="root">result</param>
+			</result>
+		</action>
+		<action name="ackAllException" class="org.action.ZExceptionAction" method="ackAllException">
 			<result type="json" name="success">
 				<param name="root">result</param>
 			</result>

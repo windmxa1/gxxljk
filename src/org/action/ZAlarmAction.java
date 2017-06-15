@@ -2,9 +2,11 @@ package org.action;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -73,6 +75,20 @@ public class ZAlarmAction extends ActionSupport {
 			result = R.getJson(1, "确认报警成功", true);
 		else
 			result = R.getJson(0, "确认报警失败", false);
+		return SUCCESS;
+	}
+
+	/**
+	 * 1.1一键确认报警
+	 * 
+	 * @return
+	 */
+	public String ackAllAlarm() {
+		ZAlarmDao aDao = new ZAlarmDaoImp();
+		if (aDao.updateAllAck())
+			result = R.getJson(1, "一键确认报警成功", true);
+		else
+			result = R.getJson(0, "一键确认报警失败", false);
 		return SUCCESS;
 	}
 
@@ -149,7 +165,7 @@ public class ZAlarmAction extends ActionSupport {
 	}
 
 	/**
-	 * 3.检测是否有最新的报警信息
+	 * 3.1检测是否有最新的报警信息
 	 */
 	public String checkAlarm() {
 		ZAlarmDao aDao = new ZAlarmDaoImp();
@@ -203,26 +219,14 @@ public class ZAlarmAction extends ActionSupport {
 				}
 				if (unAckList == null) {// 缓存数组为空，说明之前一个报警都没有，所以要提示报警,并且设置值
 					if (unAckList2 != null && unAckList2.size() > 0) {
-						Set<String> wellList = null;
-						if (isCentral) {
-							wellList = aDao.getUnACKWell();
-						} else {
-							wellList = aDao.getUnACKWell(user.getId());
-						}
 						session1.setAttribute("UnACKAlarm", unAckList2);
-						result = R.getJson(1, "请注意，线路安全告警！", wellList);
+						result = R.getJson(1, "请注意，线路安全告警！", "");
 						break;
 					}
 				} else {// 如果有缓存数组,缓存数组没有全包含报警数组，说明有新报警所以要提示报警
 					if (!unAckList.containsAll(unAckList2)) {
-						Set<String> wellList = null;
-						if (isCentral) {
-							wellList = aDao.getUnACKWell();
-						} else {
-							wellList = aDao.getUnACKWell(user.getId());
-						}
 						session1.setAttribute("UnACKAlarm", unAckList2);
-						result = R.getJson(1, "请注意，线路安全告警！", wellList);
+						result = R.getJson(1, "请注意，线路安全告警！", "");
 						break;
 					}
 				}
@@ -244,6 +248,56 @@ public class ZAlarmAction extends ActionSupport {
 		}
 		System.out.println("本次连接耗时:"
 				+ (System.currentTimeMillis() / 1000 - startTime) + "秒");
+		return SUCCESS;
+	}
+
+	/**
+	 * 3.2检测是否有最新的报警信息(返回经纬度,短轮询)
+	 */
+	public String checkAlarmForLatLon() {
+		ZAlarmDao aDao = new ZAlarmDaoImp();
+		Map<String, Object> session = ActionContext.getContext().getSession();
+		HttpSession session1 = ServletActionContext.getRequest().getSession();
+		ZUser user = (ZUser) session.get("user");
+		if (user == null) {
+			result = R.getJson(-999, "检测到您还没有进行登录，请进行登录", "");
+			return SUCCESS;
+		}
+		Boolean isCentral = Utils.isCentral(user.getId());
+		List<Long> unAckList = (List<Long>) session1
+				.getAttribute("UnACKAlarm2");
+		List<Long> unAckList2;
+		if (isCentral) {
+			unAckList2 = aDao.getUnACKAlarmIds();
+		} else {
+			unAckList2 = aDao.getUnACKAlarmIds(user.getId());
+		}
+		if (unAckList == null) {// 缓存数组为空，说明之前一个报警都没有，所以要提示报警,并且设置值
+			if (unAckList2 != null && unAckList2.size() > 0) {
+				Set<String> wellList = null;
+				if (isCentral) {
+					wellList = aDao.getUnACKWellLatLon();
+				} else {
+					wellList = aDao.getUnACKWellLatLon(user.getId());
+				}
+				session1.setAttribute("UnACKAlarm2", unAckList2);
+				result = R.getJson(1, "请注意，线路安全告警！", wellList);
+				return SUCCESS;
+			}
+		} else {// 如果有缓存数组,缓存数组没有全包含报警数组，说明有新报警所以要提示报警
+			if (!unAckList.containsAll(unAckList2)) {
+				Set<String> wellList = null;
+				if (isCentral) {
+					wellList = aDao.getUnACKWellLatLon();
+				} else {
+					wellList = aDao.getUnACKWellLatLon(user.getId());
+				}
+				session1.setAttribute("UnACKAlarm2", unAckList2);
+				result = R.getJson(1, "请注意，线路安全告警！", wellList);
+				return SUCCESS;
+			}
+		}
+		result = R.getJson(0, "无报警", "");
 		return SUCCESS;
 	}
 

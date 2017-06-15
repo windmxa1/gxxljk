@@ -21,6 +21,13 @@ public interface ZExceptionDao {
 	 * @return
 	 */
 	public boolean updateAck(long id);
+	
+	/**
+	 * 2.1一键确认全部
+	 * @return
+	 */
+	public boolean updateAllAck();
+	
 	/**
 	 * 3.获取所有连接异常列表
 	 * 

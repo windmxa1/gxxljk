@@ -55,6 +55,25 @@ public class ZExceptionDaoImp implements ZExceptionDao {
 			HibernateSessionFactory.closeSession();
 		}
 	}
+	
+	@Override
+	public boolean updateAllAck() {
+		try {
+			Session session = HibernateSessionFactory.getSession();
+			Transaction ts = session.beginTransaction();
+
+			SQLQuery sqlQuery = session
+					.createSQLQuery("update z_exception set ack=1 where ack=0");
+			sqlQuery.executeUpdate();
+			ts.commit();
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}finally{
+			HibernateSessionFactory.closeSession();
+		}
+	}
 
 	@Override
 	public List getExceptionList(Integer start, Integer limit, Integer type,
@@ -511,4 +530,5 @@ public class ZExceptionDaoImp implements ZExceptionDao {
 			HibernateSessionFactory.closeSession();
 		}
 	}
+
 }
