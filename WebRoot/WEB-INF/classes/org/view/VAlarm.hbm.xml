@@ -37,6 +37,9 @@
             <key-property name="latlon" type="java.lang.String">
                 <column name="latlon" length="41" />
             </key-property>
+            <key-property name="name" type="java.lang.String">
+                <column name="name" length="100" />
+            </key-property>
         </composite-id>
     </class>
 </hibernate-mapping>

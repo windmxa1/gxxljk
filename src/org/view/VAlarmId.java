@@ -18,6 +18,7 @@ public class VAlarmId implements java.io.Serializable {
 	private String host;
 	private String vtime;
 	private String latlon;
+	private String name;
 
 	// Constructors
 
@@ -42,7 +43,7 @@ public class VAlarmId implements java.io.Serializable {
 	/** full constructor */
 	public VAlarmId(Long id, Long occurTime, String distance,
 			String description, String level, Integer ack, String lastTime,
-			String host, String vtime, String latlon) {
+			String host, String vtime, String latlon, String name) {
 		this.id = id;
 		this.occurTime = occurTime;
 		this.distance = distance;
@@ -53,6 +54,7 @@ public class VAlarmId implements java.io.Serializable {
 		this.host = host;
 		this.vtime = vtime;
 		this.latlon = latlon;
+		this.name = name;
 	}
 
 	// Property accessors
@@ -137,6 +139,14 @@ public class VAlarmId implements java.io.Serializable {
 		this.latlon = latlon;
 	}
 
+	public String getName() {
+		return this.name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
 	public boolean equals(Object other) {
 		if ((this == other))
 			return true;
@@ -179,7 +189,10 @@ public class VAlarmId implements java.io.Serializable {
 						.getVtime().equals(castOther.getVtime())))
 				&& ((this.getLatlon() == castOther.getLatlon()) || (this
 						.getLatlon() != null && castOther.getLatlon() != null && this
-						.getLatlon().equals(castOther.getLatlon())));
+						.getLatlon().equals(castOther.getLatlon())))
+				&& ((this.getName() == castOther.getName()) || (this.getName() != null
+						&& castOther.getName() != null && this.getName()
+						.equals(castOther.getName())));
 	}
 
 	public int hashCode() {
@@ -206,6 +219,8 @@ public class VAlarmId implements java.io.Serializable {
 				+ (getVtime() == null ? 0 : this.getVtime().hashCode());
 		result = 37 * result
 				+ (getLatlon() == null ? 0 : this.getLatlon().hashCode());
+		result = 37 * result
+				+ (getName() == null ? 0 : this.getName().hashCode());
 		return result;
 	}
 
