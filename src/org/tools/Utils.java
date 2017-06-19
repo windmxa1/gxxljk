@@ -22,4 +22,13 @@ public class Utils {
 			return false;
 		}
 	}
+	/**
+	 * 生成6位随机数
+	 * 
+	 * @return
+	 */
+	public static String ran6() {
+		Double a = 100000 + Math.random() * 899999;
+		return "" + a.intValue();
+	}
 }

@@ -9,7 +9,7 @@ Anything outside the "proxool" tag is ignored. -->
 		<driver-url>jdbc:mysql://192.168.0.200:3306/zabbix?characterEncoding=UTF-8&amp;autoReconnect=true
 		</driver-url>
 		 -->
-		<driver-url>jdbc:mysql://192.168.1.100:3306/zabbix?characterEncoding=UTF-8&amp;autoReconnect=true
+		<driver-url>jdbc:mysql://10.93.5.118:3306/zabbix?characterEncoding=UTF-8&amp;autoReconnect=true
 		</driver-url>
 		<driver-class>com.mysql.jdbc.Driver</driver-class>
 		<driver-properties>

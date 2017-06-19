@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.ConnectException;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,8 +42,10 @@ import org.model.ZWebsocketCtl;
 import org.tools.JsonUtils;
 
 import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mysql.fabric.xmlrpc.base.Array;
 import com.mysql.jdbc.Buffer;
 
 //import com.opensymphony.xwork2.ActionContext;
@@ -91,7 +94,7 @@ public class WebSocketTest {
 
 	@OnClose
 	public void onClose() {
-		System.out.println(" connection closed ");
+		System.out.println(" client closed ");
 		if (thread != null) {
 			thread.state = 0;
 		}
@@ -106,6 +109,7 @@ class SocketThread extends Thread {
 	private Long userid;
 	public int state = 1;
 	private int enter = 0;
+	private int k = 0;
 
 	public SocketThread(String host, String port, Session session, Long userid) {
 		this.host = host;
@@ -145,14 +149,14 @@ class SocketThread extends Thread {
 			String json = "{\"command_code\":\"8000001\",\"description\":\"login\",\"seq_num\":\"0\",\"account\":\"ffrc\",\"password\":\"ffrc12345\"}";
 			// String json =
 			// "{\"command_code\":\"16001003\",\"description\":\"获取告警记录\",\"seq_num\":\"0\",\"start_date\":\"2015-01-10 01:00:00\",\"end_date\":\"2015-01-15 08:00:00\"}";
-//			System.out.println("客户端发送数据：" + json);
+			// System.out.println("客户端发送数据：" + json);
 			out.writeInt(json.getBytes().length);
 			// 在WINDOWS上不能转换成UTF-8，会导致发送中文数据时数据长度不对，程序崩溃
 			out.write(json.getBytes("UTF-8"));
 			// out.write(json.getBytes());
 			out.flush();
 			DataInputStream dis = new DataInputStream(socket.getInputStream());
-			int k = 0;
+
 			byte b[] = null;
 			StringBuilder result = new StringBuilder();// 结果字符串
 
@@ -164,7 +168,7 @@ class SocketThread extends Thread {
 						break;
 					}
 				}
-//				System.out.println(k++);
+				// System.out.println(k++);
 				int len = dis.readInt();
 				if (len < 1024) {
 					b = new byte[len];
@@ -240,14 +244,35 @@ class SocketThread extends Thread {
 			socket.close();
 		} catch (ConnectException e) {
 			System.out.println("连接异常,3秒后重连");
-			connect();
+			k++;
+			if (k == 5) {
+				if (session != null && session.isOpen()) {
+					Map<String, Object> map = new HashMap<>();
+					map.put("name", "该线路未命名");
+					map.put("list", new ArrayList<>());
+					ObjectMapper mapper = JsonUtils.getInstance();
+					try {
+						session.getBasicRemote().sendText(
+								mapper.writeValueAsString(map));
+					} catch (JsonProcessingException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}
+			} else {
+				connect();
+			}
 		} catch (IOException e) {
+			k = 0;
 			e.printStackTrace();
 			System.out.println("IO异常，3秒后重连");
 			connect();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			k = 0;
 			System.out.println("中断异常");
 		} finally {
 		}

@@ -10,7 +10,7 @@ public class ZConnectCtl implements java.io.Serializable {
 
 	private Long id;
 	private Long userid;
-	private Integer count;
+	private String threadId;
 	private Integer type;
 
 	// Constructors
@@ -19,18 +19,10 @@ public class ZConnectCtl implements java.io.Serializable {
 	public ZConnectCtl() {
 	}
 
-	/** minimal constructor 
-	 * @param type 0为报警1为异常
-	 * */
-	public ZConnectCtl(Long userid, Integer type) {
-		this.userid = userid;
-		this.type = type;
-	}
-
 	/** full constructor */
-	public ZConnectCtl(Long userid, Integer count, Integer type) {
+	public ZConnectCtl(Long userid, String threadId, Integer type) {
 		this.userid = userid;
-		this.count = count;
+		this.threadId = threadId;
 		this.type = type;
 	}
 
@@ -52,12 +44,12 @@ public class ZConnectCtl implements java.io.Serializable {
 		this.userid = userid;
 	}
 
-	public Integer getCount() {
-		return this.count;
+	public String getThreadId() {
+		return this.threadId;
 	}
 
-	public void setCount(Integer count) {
-		this.count = count;
+	public void setThreadId(String threadId) {
+		this.threadId = threadId;
 	}
 
 	public Integer getType() {
