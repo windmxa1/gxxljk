@@ -169,6 +169,7 @@ public class ZExceptionAction extends ActionSupport {
 		ZConnectCtlDao cDao = new ZConnectCtlDaoImp();
 		String threadId = System.currentTimeMillis() + Utils.ran6();
 		if (!cDao.saveOrUpdate(user.getId(), 1, threadId)) {
+			System.out.println("建立异常长连接失败");
 			result = R.getJson(0, "连接失败请重试", "");
 			return SUCCESS;
 		}

@@ -41,12 +41,12 @@ public class ZLogAction extends ActionSupport {
 			HttpSession session = ServletActionContext.getRequest().getSession();
 			if (end_time == null || start_time == null || end_time.equals("")
 					|| start_time.equals("")) {
-				end_time = (String) session.getAttribute("end_time");
-				start_time = (String) session.getAttribute("start_time");
+				end_time = (String) session.getAttribute("end_time_l");
+				start_time = (String) session.getAttribute("start_time_l");
 			} else {
 				/******* 保存缓存，确保下次查询也返回对应时间段的数据 ******/
-				session.setAttribute("end_time", end_time);
-				session.setAttribute("start_time", start_time);
+				session.setAttribute("end_time_l", end_time);
+				session.setAttribute("start_time_l", start_time);
 			}
 			if (start_time == null || end_time == null) {
 				long count = lDao.getCount();

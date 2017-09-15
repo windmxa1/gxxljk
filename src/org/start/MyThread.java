@@ -42,6 +42,7 @@ public class MyThread extends Thread {
 
 	@Override
 	public void run() {
+		System.out.println("thread start running");
 		Integer ErrorCount = 0;
 		connect(host, port, ErrorCount);
 	}
@@ -54,19 +55,20 @@ public class MyThread extends Thread {
 		SimpleObserver simpleObserver = null;
 		SimpleObservable simpleObservable = null;
 		ZGxHostDao gDao = new ZGxHostDaoImp();
+		int errorCase = 0;
 		try {
 			Thread.sleep(3 * 1000);// 设置延时3秒，即断开重连的缓冲时间
 			socket = new Socket(host, Integer.parseInt(port));
-
+			socket.setSoTimeout(30);
 			out = new DataOutputStream(socket.getOutputStream());
 			String json = "{\"command_code\":\"8000001\",\"description\":\"login\",\"seq_num\":\"0\",\"account\":\"ffrc\",\"password\":\"ffrc12345\"}";
 			// String json =
 			// "{\"command_code\":\"16001003\",\"description\":\"获取告警记录\",\"seq_num\":\"0\",\"start_date\":\"2015-01-10 01:00:00\",\"end_date\":\"2015-01-15 08:00:00\"}";
-//			System.out.println("客户端发送数据：" + json);
+			// System.out.println("客户端发送数据：" + json);
 			out.writeInt(json.getBytes().length);
 			// 在WINDOWS上不能转换成UTF-8，会导致发送中文数据时数据长度不对，程序崩溃
 			out.write(json.getBytes("UTF-8"));
-//			out.write(json.getBytes());
+			// out.write(json.getBytes());
 			out.flush();
 			// 更新为激活状态
 			gDao.updateOnStatus(host);
@@ -90,41 +92,42 @@ public class MyThread extends Thread {
 
 				// json =
 				// "{\"command_code\":\"16000201\",\"description\":\"dong dong\",\"seq_num\":\"0\"}";
-//				System.out.println("客户端发送数据：" + json);
+				// System.out.println("客户端发送数据：" + json);
 
 				out.writeInt(json.getBytes().length);
 				// 在WINDOWS上不能转换成UTF-8，会导致发送中文数据时数据长度不对，程序崩溃
-//				 out.write(json.getBytes("UTF-8"));
+				// out.write(json.getBytes("UTF-8"));
 				out.write(json.getBytes());
 				out.flush();
 				Thread.sleep(10 * 1000);
 			}
 		} catch (ConnectException e) {
-			// e.printStackTrace();
-			// System.out.println(host+","+port);
+			errorCase = 1;
 			ErrorCount++;
-			// System.out.println("ErrorCount="+ErrorCount);
-			if (ErrorCount < 5) {
-				System.out.println("光纤服务器连接异常,3秒后自动重连");
+			System.out.println("光纤服务器连接异常,3秒后自动重连");
+			if (ErrorCount >= 3) {
+				ErrorCount = 0;
 				// **DB操作，记录连接异常**/
 				ZExceptionDao eDao = new ZExceptionDaoImp();
 				ZException z = new ZException(
 						System.currentTimeMillis() / 1000, 0, "光纤服务器连接异常", host);
 				eDao.addException(z);
 				// =================================
-				connect(host, port, ErrorCount);
-			} else {// 错误连续超过5次，则不再尝试连接，同时更改光纤连接状态
-				System.out.println("error>5");
 				gDao.updateOffStatus(host);
+				System.out.println("error>=3");
 			}
+			connect(host, port, ErrorCount);
 		} catch (InterruptedException e) {
+			errorCase = 2;
 			e.printStackTrace();
 			System.out.println("中断异常");
 		} catch (IOException e) {
+			errorCase = 3;
 			ErrorCount++;
-			if (ErrorCount < 5) {
+			System.out.println("光纤服务器连接异常,3秒后自动重连");
+			if (ErrorCount >= 3) {
+				ErrorCount = 0;
 				// e.printStackTrace();
-				System.out.println("光纤服务器连接异常,3秒后自动重连");
 				// **DB操作，记录连接异常**/
 				ZExceptionDao eDao = new ZExceptionDaoImp();
 				ZException z = new ZException(
@@ -132,12 +135,12 @@ public class MyThread extends Thread {
 						"光纤服务器异常，请确认服务器Ip以及端口是否改变", host);
 				eDao.addException(z);
 				// =================================
-				connect(host, port, ErrorCount);
-			} else {
-				// 错误连续超过5次，则不再尝试连接，同时更改光纤连接状态
-				System.out.println("error>5");
+				System.out.println("error>=3");
 				gDao.updateOffStatus(host);
 			}
+			connect(host, port, ErrorCount);
+		} finally {
+			System.out.println(host + " error:" + errorCase);
 		}
 		return null;
 	}
@@ -155,10 +158,8 @@ class SimpleObserver implements Observer {
 		try {
 			this.socket = new Socket(host, Integer.parseInt(port));
 		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -169,6 +170,7 @@ class SimpleObserver implements Observer {
 			System.out.println("5秒后重启线程");
 			Thread.sleep(5000);
 		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		// 重启线程
 		SimpleObservable simpleObservable = new SimpleObservable();
@@ -200,18 +202,20 @@ class SimpleObservable extends Observable implements Runnable {
 
 	SimpleObservable() {
 		thread = new Thread(this);
-//		System.out.println("A类被实例化了");
+		// System.out.println("A类被实例化了");
 	}
 
 	public void run() {
+		System.out.println("读线程启动....");
 		try {
 			int k = 0;
 			byte b[] = null;
 			String result = "";
 			while (true) {
-//				System.out.println(k++);
+				System.out.println(host + "MyThread running...");
+				// System.out.println(k++);
 				int len = dis.readInt();
-//				System.out.println("服务器返回长度：" + len);
+				// System.out.println("服务器返回长度：" + len);
 				if (len < 1024) {
 					b = new byte[len];
 					dis.read(b);
@@ -263,16 +267,17 @@ class SimpleObservable extends Observable implements Runnable {
 						e.printStackTrace();
 					}
 				} else {// 心跳及其他操作
-//					if(!result.contains("\"command_code\":\"5000002\"")){
-//						System.out.println("服务器返回数据1：" + result);
-//					}
+					// if(!result.contains("\"command_code\":\"5000002\"")){
+					// System.out.println("服务器返回数据1：" + result);
+					// }
 				}
 				// }
 				result = "";
+				Thread.sleep(100);
 			}
 		} catch (SocketTimeoutException e) {
 			// e.printStackTrace();
-			// System.out.println("光纤连接异常，心跳包未得到正常回应。。。");
+			System.out.println("光纤连接异常，心跳包未得到正常回应。。。");
 			// **DB操作，记录连接异常**/
 			ZExceptionDao eDao = new ZExceptionDaoImp();
 			ZException z = new ZException(System.currentTimeMillis() / 1000, 0,
@@ -295,6 +300,8 @@ class SimpleObservable extends Observable implements Runnable {
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} finally {
+			System.out.println(host + "readThread off");
 		}
 	}
 }

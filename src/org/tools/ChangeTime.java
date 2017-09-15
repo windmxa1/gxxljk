@@ -18,6 +18,10 @@ public class ChangeTime {
 	// .format(new java.util.Date(timestamp));
 	// return date;
 	// }
+	public static void main(String[] args) {
+		System.out.println(System.currentTimeMillis()/1000);
+//		System.out.println(TimeStamp2Date("1498721143","yyyy-MM-dd HH:mm:ss"));
+	}
 	/**
 	 * 日期格式字符串转换成时间戳
 	 * 

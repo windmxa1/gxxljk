@@ -1,0 +1,296 @@
+package org.start;
+
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.EOFException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.ConnectException;
+import java.net.Socket;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Observable;
+import java.util.Observer;
+
+import org.dao.ZAlarmDao;
+import org.dao.ZExceptionDao;
+import org.dao.ZGxHostDao;
+import org.dao.imp.ZAlarmDaoImp;
+import org.dao.imp.ZExceptionDaoImp;
+import org.dao.imp.ZGxHostDaoImp;
+import org.model.AlarmBean;
+import org.model.ZAlarm;
+import org.model.ZException;
+import org.tools.AlarmUtil;
+import org.tools.JsonUtils;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+public class Demo_ver_4 extends Thread {
+	private String host;
+	private String port;
+	private static Socket socket = null;;
+
+	public Demo_ver_4(String host, String port) {
+		this.host = host;
+		this.port = port;
+	}
+
+	@Override
+	public void run() {
+		System.out.println("thread start running");
+		Integer ErrorCount = 0;
+		connect(host, port, ErrorCount);
+	}
+
+	public static Object connect(String host, String port, Integer ErrorCount) {
+
+		DataOutputStream out = null;
+
+		SimpleObserver2 SimpleObserver2 = null;
+		SimpleObservable2 SimpleObservable2 = null;
+		ZGxHostDao gDao = new ZGxHostDaoImp();
+		int errorCase = 0;
+		try {
+			Thread.sleep(3 * 1000);// 设置延时3秒，即断开重连的缓冲时间
+			socket = new Socket(host, Integer.parseInt(port));
+			socket.setSoTimeout(30 * 1000);
+			out = new DataOutputStream(socket.getOutputStream());
+			String json = "{\"command_code\":\"8000001\",\"description\":\"login\",\"seq_num\":\"0\",\"account\":\"ffrc\",\"password\":\"ffrc12345\"}";
+			// System.out.println("客户端发送数据：" + json);
+			out.writeInt(json.getBytes().length);
+			// 在WINDOWS上不能转换成UTF-8，会导致发送中文数据时数据长度不对，程序崩溃
+			out.write(json.getBytes("UTF-8"));
+			// out.write(json.getBytes());
+			out.flush();
+			// 更新为激活状态
+			gDao.updateOnStatus(host);
+			ErrorCount = 0;
+
+			// 创建观察者对象
+			SimpleObserver2 = new SimpleObserver2(socket, host);
+			// 创建被观察者对象
+			SimpleObservable2 = new SimpleObservable2();
+
+			// 需要将观察者类加入到被观察者的观察者列表中
+
+			SimpleObservable2.addObserver(SimpleObserver2);
+
+			SimpleObservable2.init(socket.getInputStream(), host);
+			// 启动被观察者，观察者线程也会同时被启动
+			SimpleObservable2.thread.start();
+
+			while (true) {
+				json = "{\"command_code\":\"16000201\",\"description\":\"心跳\",\"seq_num\":\"0\"}";
+
+				out.writeInt(json.getBytes().length);
+				// 在WINDOWS上不能转换成UTF-8，会导致发送中文数据时数据长度不对，程序崩溃
+				// out.write(json.getBytes("UTF-8"));
+				out.write(json.getBytes());
+				out.flush();
+				Thread.sleep(10 * 1000);
+			}
+		} catch (ConnectException e) {
+			errorCase = 1;
+			ErrorCount++;
+			System.out.println("光纤服务器连接异常,3秒后自动重连");
+			if (ErrorCount >= 3) {
+				ErrorCount = 0;
+				// **DB操作，记录连接异常**/
+				ZExceptionDao eDao = new ZExceptionDaoImp();
+				ZException z = new ZException(
+						System.currentTimeMillis() / 1000, 0, "光纤服务器连接异常", host);
+				eDao.addException(z);
+				// =================================
+				gDao.updateOffStatus(host);
+				System.out.println("error>=3");
+			}
+			connect(host, port, ErrorCount);
+		} catch (InterruptedException e) {
+			errorCase = 2;
+			e.printStackTrace();
+			System.out.println("中断异常");
+		} catch (IOException e) {
+			errorCase = 3;
+			ErrorCount++;
+			System.out.println("光纤服务器连接异常,3秒后自动重连");
+			if (ErrorCount >= 3) {
+				ErrorCount = 0;
+				// e.printStackTrace();
+				// **DB操作，记录连接异常**/
+				ZExceptionDao eDao = new ZExceptionDaoImp();
+				ZException z = new ZException(
+						System.currentTimeMillis() / 1000, 0,
+						"光纤服务器异常，请确认服务器Ip以及端口是否改变", host);
+				eDao.addException(z);
+				// =================================
+				System.out.println("error>=3");
+				gDao.updateOffStatus(host);
+			}
+			connect(host, port, ErrorCount);
+		} finally {
+			System.out.println(host + " error:" + errorCase);
+		}
+		return null;
+	}
+}
+
+class SimpleObserver2 implements Observer {
+	private Socket socket;
+	private String host;
+
+	public SimpleObserver2(Socket socket, String host) {
+		this.socket = socket;
+		this.host = host;
+	}
+
+	@Override
+	public void update(Observable observable, Object data) {
+		try {
+			System.out.println("5秒后重启线程");
+			Thread.sleep(5000);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		// 重启线程
+		SimpleObservable2 SimpleObservable2 = new SimpleObservable2();
+		SimpleObserver2 SimpleObserver2 = new SimpleObserver2(socket, host);
+		// 需要将观察者类加入到被观察者的观察者列表中
+		SimpleObservable2.addObserver(SimpleObserver2);
+		try {
+			SimpleObservable2.init(socket.getInputStream(), host);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		SimpleObservable2.thread.run();
+	}
+}
+
+/**
+ * 被观察者 线程 类
+ */
+class SimpleObservable2 extends Observable implements Runnable {
+	private DataInputStream dis;
+	private String host;
+	Thread thread;
+
+	public void init(InputStream inputStream, String host) {
+		dis = new DataInputStream(inputStream);
+		this.host = host;
+	}
+
+	SimpleObservable2() {
+		thread = new Thread(this);
+		// System.out.println("A类被实例化了");
+	}
+
+	public void run() {
+		System.out.println("读线程启动....");
+		try {
+			int k = 0;
+			byte b[] = null;
+			String result = "";
+			while (true) {
+				System.out.println(host + "MyThread running...");
+				// System.out.println(k++);
+				int len = dis.readInt();
+
+				// System.out.println("服务器返回长度：" + len);
+				if (len < 1024) {
+					b = new byte[len];
+					dis.read(b);
+					result = new String(b, "UTF-8");
+					// result = new String(b);
+					// System.out.println("服务器返回数据1：" + result);
+					b = null;
+				} else {
+					// 以1024字节为一个单位进行数据读取防止内存溢出
+					for (int i = 0; i < len; i = i + 1024) {
+						if (1024 + i > len) {
+							// System.out.println("len % 1024=" + len % 1024);
+							b = new byte[len % 1024];
+							dis.read(b);
+							// result = result + new String(b, "UTF-8");
+							// result = result + new String(b);
+							// System.out.println("服务器返回数据1：" + new String(b)
+							// + "***end***");
+						} else {
+							b = new byte[1024];
+							dis.read(b);
+							// result = result + new String(b, "UTF-8");
+							// result = result + new String(b);
+							// System.out.println("服务器返回数据1：" + new String(b)
+							// + "***end***");
+						}
+						b = null;
+						Thread.sleep(1);
+					}
+				}
+				// if (!result.contains("\"command_code\":\"5000002\"")) {//
+				// 过滤波形数据
+				if (result.contains("\"command_code\":\"5000001\"")) {// 检测报警
+					// System.out.println("接收到报警");
+					// DB操作
+					ZAlarmDao aDao = new ZAlarmDaoImp();
+					ObjectMapper mapper = JsonUtils.getInstance();
+					AlarmBean ab = mapper.readValue(result, AlarmBean.class);
+					try {
+						long time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+								.parse(ab.getOccur_time()).getTime() / 1000;
+
+						ZAlarm a = new ZAlarm(time, ab.getDistance(),
+								AlarmUtil.getDescription(ab.getAlarm_level()),
+								ab.getAlarm_level(), 0, ab.getLast_time(), host);
+						aDao.addAlarm(a);
+					} catch (ParseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				} else {// 心跳及其他操作
+					// if(!result.contains("\"command_code\":\"5000002\"")){
+					// System.out.println("服务器返回数据1：" + result);
+					// }
+				}
+				// }
+				result = "";
+				Thread.sleep(100);
+			}
+		} catch (SocketTimeoutException e) {
+			// e.printStackTrace();
+			System.out.println("光纤连接异常，心跳包未得到正常回应。。。");
+			// **DB操作，记录连接异常**/
+			ZExceptionDao eDao = new ZExceptionDaoImp();
+			ZException z = new ZException(System.currentTimeMillis() / 1000, 0,
+					"光纤连接异常，心跳包未得到正常回应。。。", host);
+			eDao.addException(z);
+			// =================================
+			setChanged();
+			notifyObservers();
+		} catch (EOFException e) {
+			setChanged();
+			notifyObservers();
+		} catch (JsonParseException e) {
+			setChanged();
+			notifyObservers();
+		} catch (NegativeArraySizeException e) {
+			setChanged();
+			notifyObservers();
+		} catch (JsonMappingException e) {
+			setChanged();
+			notifyObservers();
+		} catch (IOException e) {
+			setChanged();
+			notifyObservers();
+		} catch (InterruptedException e) {
+			setChanged();
+			notifyObservers();
+		} finally {
+			System.out.println(host + "readThread off");
+		}
+	}
+}

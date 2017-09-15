@@ -36,7 +36,9 @@ public class LogInterceptor extends AbstractInterceptor {
 				+ "--"
 				+ new SimpleDateFormat("yyyy/MM/dd/HH:mm:ss")
 						.format(new Date()) + "--" + actionName);
-
+		if(actionName.equals("activeGxHost")){
+			System.out.println("active "+request.getParameter("host")+"|"+request.getParameter("port"));
+		}
 		ZLogDao lDao = new ZLogDaoImp();
 
 		if (actionName.equals("getLogList")) {// 不记录日志，但需要权限控制

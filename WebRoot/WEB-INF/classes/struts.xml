@@ -20,6 +20,13 @@
 		</global-results>
 	</package>
 	<constant name="struts.action.excludePattern" value="/ws/.*,ws://.*"></constant>
+	<package name="nolog" extends="json-default" namespace="/">
+		<action name="startSocket" class="org.action.ZGxHostAction" method="startSocket">
+			<result type="json" name="success">
+				<param name="root">result</param>
+			</result>
+		</action>
+	</package>
 	<package name="ajax" extends="json-default,global" namespace="/">
 		<action name="login" class="org.action.ZUserAction" method="login">
 			<result type="json" name="success">

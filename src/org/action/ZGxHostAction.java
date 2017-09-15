@@ -10,6 +10,7 @@ import org.dao.imp.ZGxHostDaoImp;
 import org.dao.imp.ZUserDaoImp;
 import org.model.ZGxHost;
 import org.model.ZUser;
+import org.start.Demo_ver_7;
 import org.start.MyThread;
 import org.tools.R;
 
@@ -34,7 +35,7 @@ public class ZGxHostAction extends ActionSupport {
 	public String getGxHostList() {
 		Map<String, Object> session1 = ActionContext.getContext().getSession();
 		ZUser user = (ZUser) session1.get("user");
-		
+
 		ZGxHostDao gDao = new ZGxHostDaoImp();
 		Long count;
 		List<ZGxHost> list;
@@ -50,6 +51,33 @@ public class ZGxHostAction extends ActionSupport {
 		map.put("list", list);
 		result = R.getJson(1, "", map);
 		return SUCCESS;
+	}
+
+	/**
+	 * 启动光纤通信线程
+	 */
+	public String startSocket() {
+		ZGxHostDao gDao = new ZGxHostDaoImp();
+		// 光纤线程启动
+		List<ZGxHost> list = gDao.getAllList(0, -1);
+		while (true) {
+			for (ZGxHost gx : list) {
+				// try {
+				// Runtime.getRuntime().exec(
+				// "sh /home/socketControl/socketStart.sh " + gx.getHost()
+				// + " " + gx.getPort());
+				// } catch (Exception e) {
+				// e.printStackTrace();
+				// }
+				Demo_ver_7 thread = new Demo_ver_7(gx.getHost(), gx.getPort());
+				thread.start();
+				try {
+					thread.join();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 
 	/**
@@ -78,6 +106,7 @@ public class ZGxHostAction extends ActionSupport {
 		ZGxHostDao gDao = new ZGxHostDaoImp();
 		if (gDao.addGxHost(gxHost) > 0) {
 			MyThread thread = new MyThread(host, port);
+			// thread.setDaemon(true);
 			thread.start();
 			result = R.getJson(1, "添加成功，正在等待激活。。", "");
 		} else {
@@ -104,6 +133,7 @@ public class ZGxHostAction extends ActionSupport {
 	 */
 	public String activeGxHost() {
 		MyThread thread = new MyThread(host, port);
+		// thread.setDaemon(true);
 		thread.start();
 		result = R.getJson(1, "设备激活中，请稍后", "");
 		return SUCCESS;
