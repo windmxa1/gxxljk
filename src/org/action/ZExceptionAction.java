@@ -55,17 +55,18 @@ public class ZExceptionAction extends ActionSupport {
 
 	/**
 	 * 一键确认异常
+	 * 
 	 * @return
 	 */
-	public String ackAllException(){
+	public String ackAllException() {
 		ZExceptionDao eDao = new ZExceptionDaoImp();
-		if(eDao.updateAllAck())
+		if (eDao.updateAllAck())
 			result = R.getJson(1, "一键确认异常成功", true);
 		else
 			result = R.getJson(0, "一键确认异常失败", false);
 		return SUCCESS;
 	}
-	
+
 	/**
 	 * 判断是否为总局工作人员
 	 * 
@@ -74,7 +75,7 @@ public class ZExceptionAction extends ActionSupport {
 	private boolean isCentral(Long userid) {
 		ZUserDao uDao = new ZUserDaoImp();
 		if (uDao.getUserBelong(userid).contains("总局")) {
-//			System.out.println("总局人员");
+			// System.out.println("总局人员");
 			return true;
 		} else {
 			return false;
@@ -154,147 +155,62 @@ public class ZExceptionAction extends ActionSupport {
 	}
 
 	/**
-	 * 3.检测是否有最新的线路异常信息
+	 * 3.检测是否有最新的线路异常信息（短轮询）
 	 */
 	public String checkException() {
-		long startTime = System.currentTimeMillis() / 1000;
 		ZExceptionDao eDao = new ZExceptionDaoImp();
-		HttpSession session1 = ServletActionContext.getRequest().getSession();
 		Map<String, Object> session = ActionContext.getContext().getSession();
 		ZUser user = (ZUser) session.get("user");
 		if (user == null) {
 			result = R.getJson(-999, "检测到您还没有进行登录，请进行登录", "");
 			return SUCCESS;
 		}
-		ZConnectCtlDao cDao = new ZConnectCtlDaoImp();
-		String threadId = System.currentTimeMillis() + Utils.ran6();
-		if (!cDao.saveOrUpdate(user.getId(), 1, threadId)) {
-			System.out.println("建立异常长连接失败");
-			result = R.getJson(0, "连接失败请重试", "");
-			return SUCCESS;
+		Set<Long> unAckList2;
+		if (isCentral(user.getId())) {
+			unAckList2 = eDao.getUnACKExceptionIds();
+		} else {
+			unAckList2 = eDao.getUnACKExceptionIds(user.getId());
 		}
-		try {
-			int i = 0;
-			while (true) {
-				if ((System.currentTimeMillis() / 1000) - startTime > 5 * 60) {
-					result = R.getJson(0, "连接超时，默认超时时间为5分钟", "");
-					break;
-				}
-
-				String threadId2 = cDao.getThreadId(user.getId(), 1);
-				if (i > 0 && !threadId2.equals(threadId)) {// 非第一次进入轮询，且连接数大于1则退出轮询，从逻辑上实现断开前一次的连接(防止重复连接)
-					result = R.getJson(500, "自动断开前一次的连接，当前可运行进程编号为："
-							+ threadId2, "");
-					break;
-				}
-				Set<Long> unAckList = (Set<Long>) session1
-						.getAttribute("UnACKException");
-				Set<Long> unAckList2;
-				if (isCentral(user.getId())) {
-					unAckList2 = eDao.getUnACKExceptionIds();
-				} else {
-					unAckList2 = eDao.getUnACKExceptionIds(user.getId());
-				}
-				if (unAckList == null) {// 缓存数组为空，说明之前一个报警都没有，所以要提示报警,并且设置值
-					if (unAckList2 != null && unAckList2.size() > 0) {
-						session1.setAttribute("UnACKException", unAckList2);
-						result = R.getJson(1, "请注意，线路连接异常，请及时排查！", "");
-						break;
-					}
-				} else {// 如果有缓存数组,缓存数组没有全包含报警数组，说明有新报警所以要提示报警
-					if (!unAckList.containsAll(unAckList2)) {
-						session1.setAttribute("UnACKException", unAckList2);
-						result = R.getJson(1, "请注意，线路连接异常，请及时排查！", "");
-						break;
-					}
-				}
-				Thread.sleep(1000 * 1);
-				i = 1;
-			}
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-			result = R.getJson(0, "线程出错，需重新发送请求", "");
-		} finally {
+		if (unAckList2 != null && unAckList2.size() > 0) {
+			result = R.getJson(1, "请注意，线路连接异常，请及时排查！", "");
 		}
+		result = R.getJson(0, "线程出错，需重新发送请求", "");
 		return SUCCESS;
 	}
-//	/**
-//	 * 3.检测是否有最新的线路异常信息
-//	 */
-//	public String checkException() {
-//		long startTime = System.currentTimeMillis() / 1000;
-//		ZExceptionDao eDao = new ZExceptionDaoImp();
-//		HttpSession session1 = ServletActionContext.getRequest().getSession();
-//		Map<String, Object> session = ActionContext.getContext().getSession();
-//		ZUser user = (ZUser) session.get("user");
-//		if (user == null) {
-//			result = R.getJson(-999, "检测到您还没有进行登录，请进行登录", "");
-//			return SUCCESS;
-//		}
-//		ZConnectCtlDao cDao = new ZConnectCtlDaoImp();
-//		ZConnectCtl conCtl = cDao.getConnect(user.getId(), 1);
-//		if (conCtl != null) {
-//			conCtl.setCount(conCtl.getCount() + 1);
-//		} else {
-//			conCtl = new ZConnectCtl(user.getId(), 1);
-//		}
-//		Long id = cDao.insertConnect(conCtl);
-//		if (id == -1) {
-//			result = R.getJson(0, "建立连接失败，请重试", "");
-//			return SUCCESS;
-//		}
-//		try {
-//			int i = 0;
-//			while (true) {
-//				if ((System.currentTimeMillis() / 1000) - startTime > 5 * 60) {
-//					result = R.getJson(0, "连接超时，默认超时时间为5分钟", "");
-//					break;
-//				}
-//				
-//				Integer connectCount = cDao.getConnectCount(user.getId(), 1);
-//				if (i > 0 && connectCount > 1) {// 非第一次进入轮询，且连接数大于2则退出轮询，从逻辑上实现断开前一次的连接(防止重复连接)
-//					result = R.getJson(500, "自动断开前一次的连接，当前连接数为：" + connectCount,
-//							"");
-//					break;
-//				}
-//				
-//				Set<Long> unAckList = (Set<Long>) session1
-//						.getAttribute("UnACKException");
-//				Set<Long> unAckList2;
-//				if (isCentral(user.getId())) {
-//					unAckList2 = eDao.getUnACKExceptionIds();
-//				} else {
-//					unAckList2 = eDao.getUnACKExceptionIds(user.getId());
-//				}
-//				if (unAckList == null) {// 缓存数组为空，说明之前一个报警都没有，所以要提示报警,并且设置值
-//					if (unAckList2 != null && unAckList2.size() > 0) {
-//						session1.setAttribute("UnACKException", unAckList2);
-//						result = R.getJson(1, "请注意，线路连接异常，请及时排查！", "");
-//						break;
-//					}
-//				} else {// 如果有缓存数组,缓存数组没有全包含报警数组，说明有新报警所以要提示报警
-//					if (!unAckList.containsAll(unAckList2)) {
-//						session1.setAttribute("UnACKException", unAckList2);
-//						result = R.getJson(1, "请注意，线路连接异常，请及时排查！", "");
-//						break;
-//					}
-//				}
-//				Thread.sleep(1000 * 1);
-//				i = 1;
-//			}
-//		} catch (InterruptedException e) {
-//			e.printStackTrace();
-//			result = R.getJson(0, "线程出错，需重新发送请求", "");
-//		} finally {
-//			// 结束时，连接数减1
-//			if (id > 0) {
-//				conCtl.setId(id);
-//			}
-//			conCtl.setCount(cDao.getConnectCount(user.getId(), 1) - 1);
-//			cDao.insertConnect(conCtl);
-//		}
-//		return SUCCESS;
-//	}
+
+	/*
+	 * public String checkException() { long startTime =
+	 * System.currentTimeMillis() / 1000; ZExceptionDao eDao = new
+	 * ZExceptionDaoImp(); HttpSession session1 =
+	 * ServletActionContext.getRequest().getSession(); Map<String, Object>
+	 * session = ActionContext.getContext().getSession(); ZUser user = (ZUser)
+	 * session.get("user"); if (user == null) { result = R.getJson(-999,
+	 * "检测到您还没有进行登录，请进行登录", ""); return SUCCESS; } ZConnectCtlDao cDao = new
+	 * ZConnectCtlDaoImp(); String threadId = System.currentTimeMillis() +
+	 * Utils.ran6(); if (!cDao.saveOrUpdate(user.getId(), 1, threadId)) {
+	 * System.out.println("建立异常长连接失败"); result = R.getJson(0, "连接失败请重试", "");
+	 * return SUCCESS; } try { int i = 0; while (true) { if
+	 * ((System.currentTimeMillis() / 1000) - startTime > 5 * 60) { result =
+	 * R.getJson(0, "连接超时，默认超时时间为5分钟", ""); break; }
+	 * 
+	 * String threadId2 = cDao.getThreadId(user.getId(), 1); if (i > 0 &&
+	 * !threadId2.equals(threadId)) {//
+	 * 非第一次进入轮询，且连接数大于1则退出轮询，从逻辑上实现断开前一次的连接(防止重复连接) result = R.getJson(500,
+	 * "自动断开前一次的连接，当前可运行进程编号为：" + threadId2, ""); break; } Set<Long> unAckList =
+	 * (Set<Long>) session1 .getAttribute("UnACKException"); Set<Long>
+	 * unAckList2; if (isCentral(user.getId())) { unAckList2 =
+	 * eDao.getUnACKExceptionIds(); } else { unAckList2 =
+	 * eDao.getUnACKExceptionIds(user.getId()); } if (unAckList == null) {//
+	 * 缓存数组为空，说明之前一个报警都没有，所以要提示报警,并且设置值 if (unAckList2 != null &&
+	 * unAckList2.size() > 0) { session1.setAttribute("UnACKException",
+	 * unAckList2); result = R.getJson(1, "请注意，线路连接异常，请及时排查！", ""); break; } }
+	 * else {// 如果有缓存数组,缓存数组没有全包含报警数组，说明有新报警所以要提示报警 if
+	 * (!unAckList.containsAll(unAckList2)) {
+	 * session1.setAttribute("UnACKException", unAckList2); result =
+	 * R.getJson(1, "请注意，线路连接异常，请及时排查！", ""); break; } } Thread.sleep(1000 * 1);
+	 * i = 1; } } catch (InterruptedException e) { e.printStackTrace(); result =
+	 * R.getJson(0, "线程出错，需重新发送请求", ""); } finally { } return SUCCESS; }
+	 */
 
 	/**
 	 * 4.获取最新异常记录

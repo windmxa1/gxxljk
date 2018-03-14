@@ -22,7 +22,7 @@
     var userid;
     var webSocket;
     if ('WebSocket' in window) {
-        webSocket = new WebSocket("ws://192.168.0.101:8080/gxxljk/ws/websocket");
+        webSocket = new WebSocket("ws://localhost:8080/gxxljk/ws/websocket");
     }
 
     webSocket.onerror = function(event) {
@@ -48,6 +48,7 @@
 
     function onMessage(event) {
         var result = JSON.parse(event.data);
+        alert("asd");
         clearPlot();
         chart.addSeries({
             name: result.name,
@@ -127,7 +128,7 @@
                 // alert()
                 //切换光纤时：发送新的数据，服务器onmessage比较缓存中的Host与当前Host,不同则中断前次建立的socket连接，并建立新的连接
                 console.log("select bl value:" + $("#bl").val());
-                userid = parent.Ext.util.Cookies.get("userid");
+                userid = 2;
                 console.log('userid:' + userid);
                 if ($("#bl").val() != null && $("#bl").val() != '' && userid != null && userid != '') {
                     webSocket.send('{"host":"' + $("#bl").val() + '","port":"6179","userid":' + userid + '}');

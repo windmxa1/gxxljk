@@ -70,7 +70,25 @@ public class ZAlarmDaoImp implements ZAlarmDao {
 			sqlQuery.executeUpdate();
 			ts.commit();
 			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		} finally {
+			HibernateSessionFactory.closeSession();
+		}
+	}
 
+	@Override
+	public boolean updateAllAck(Long userid) {
+		try {
+			Session session = HibernateSessionFactory.getSession();
+			Transaction ts = session.beginTransaction();
+			SQLQuery sqlQuery = session
+					.createSQLQuery("update z_alarm set a a.ack=1 where a.ack=0 and a.host in( select gh.host from z_gx_host gh, z_user_belong ub where gh.belong = ub.belong and ub.user_id=?)");
+			sqlQuery.setParameter(0, userid);
+			sqlQuery.executeUpdate();
+			ts.commit();
+			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
@@ -522,42 +540,43 @@ public class ZAlarmDaoImp implements ZAlarmDao {
 		}
 	}
 
-//	@Override
-//	public Set<String> getUnACKWell(Long userid) {
-//		try {
-//			Session session = HibernateSessionFactory.getSession();
-//			String sql = "select v.id.location from VAlarm v where v.id.ack = 0 and v.id.host in( select gh.host from ZGxHost gh, ZUserBelong ub where gh.belong = ub.belong and ub.userId=?)";
-//			Query query = session.createQuery(sql);
-//			query.setParameter(0, userid);
-//			List<String> list = (List<String>) query.list();
-//			Set<String> set = new HashSet<>();
-//			set.addAll(list);
-//			return set;
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			return null;
-//		} finally {
-//			HibernateSessionFactory.closeSession();
-//		}
-//	}
-//
-//	@Override
-//	public Set<String> getUnACKWell() {
-//		try {
-//			Session session = HibernateSessionFactory.getSession();
-//			String sql = "select v.id.location from VAlarm v where v.id.ack = 0 ";
-//			Query query = session.createQuery(sql);
-//			List<String> list = (List<String>) query.list();
-//			Set<String> set = new HashSet<>();
-//			set.addAll(list);
-//			return set;
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			return null;
-//		} finally {
-//			HibernateSessionFactory.closeSession();
-//		}
-//	}
+	// @Override
+	// public Set<String> getUnACKWell(Long userid) {
+	// try {
+	// Session session = HibernateSessionFactory.getSession();
+	// String sql =
+	// "select v.id.location from VAlarm v where v.id.ack = 0 and v.id.host in( select gh.host from ZGxHost gh, ZUserBelong ub where gh.belong = ub.belong and ub.userId=?)";
+	// Query query = session.createQuery(sql);
+	// query.setParameter(0, userid);
+	// List<String> list = (List<String>) query.list();
+	// Set<String> set = new HashSet<>();
+	// set.addAll(list);
+	// return set;
+	// } catch (Exception e) {
+	// e.printStackTrace();
+	// return null;
+	// } finally {
+	// HibernateSessionFactory.closeSession();
+	// }
+	// }
+	//
+	// @Override
+	// public Set<String> getUnACKWell() {
+	// try {
+	// Session session = HibernateSessionFactory.getSession();
+	// String sql = "select v.id.location from VAlarm v where v.id.ack = 0 ";
+	// Query query = session.createQuery(sql);
+	// List<String> list = (List<String>) query.list();
+	// Set<String> set = new HashSet<>();
+	// set.addAll(list);
+	// return set;
+	// } catch (Exception e) {
+	// e.printStackTrace();
+	// return null;
+	// } finally {
+	// HibernateSessionFactory.closeSession();
+	// }
+	// }
 
 	@Override
 	public Set<String> getUnACKWellLatLon(Long userid) {

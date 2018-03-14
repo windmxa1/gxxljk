@@ -102,4 +102,8 @@ public interface ZAlarmDao {
 	public boolean deleteAlarm(Long start_clock, Long end_clock, Long userid);
 
 	public boolean deleteAlarm(Long start_clock, Long end_clock);
+	/**
+	 * 一键确认所属分局的所有告警
+	 */
+	boolean updateAllAck(Long userid);
 }

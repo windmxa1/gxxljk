@@ -88,10 +88,20 @@ public class ZAlarmAction extends ActionSupport {
 	 */
 	public String ackAllAlarm() {
 		ZAlarmDao aDao = new ZAlarmDaoImp();
-		if (aDao.updateAllAck())
-			result = R.getJson(1, "一键确认报警成功", true);
-		else
-			result = R.getJson(0, "一键确认报警失败", false);
+		Map<String, Object> session1 = ActionContext.getContext().getSession();
+		ZUser user = (ZUser) session1.get("user");
+		boolean isCentral = Utils.isCentral(user.getId());
+		if (isCentral) {
+			if (aDao.updateAllAck())
+				result = R.getJson(1, "一键确认报警成功", true);
+			else
+				result = R.getJson(0, "一键确认报警失败", false);
+		} else {
+			if (aDao.updateAllAck(user.getId()))
+				result = R.getJson(1, "一键确认报警成功", true);
+			else
+				result = R.getJson(0, "一键确认报警失败", false);
+		}
 		return SUCCESS;
 	}
 
@@ -168,81 +178,72 @@ public class ZAlarmAction extends ActionSupport {
 	}
 
 	/**
-	 * 3.1检测是否有最新的报警信息
+	 * 3.1检测是否有报警,短轮询
 	 */
 	public String checkAlarm() {
 		ZAlarmDao aDao = new ZAlarmDaoImp();
-		long startTime = System.currentTimeMillis() / 1000;
-		HttpSession session1 = ServletActionContext.getRequest().getSession();
 		Map<String, Object> session = ActionContext.getContext().getSession();
 		ZUser user = (ZUser) session.get("user");
 		if (user == null) {
 			result = R.getJson(-999, "检测到您还没有进行登录，请进行登录", "");
 			return SUCCESS;
 		}
-		String threadId = System.currentTimeMillis() + Utils.ran6();
-		ZConnectCtlDao cDao = new ZConnectCtlDaoImp();
-		if (!cDao.saveOrUpdate(user.getId(), 0, threadId)) {
-			System.out.println("建立告警长连接失败");
-			result = R.getJson(0, "连接失败请重试", "");
-			return SUCCESS;
-		}
 		try {
-			int i = 0;
-			while (true) {
-				if ((System.currentTimeMillis() / 1000) - startTime > 5 * 60) {
-					result = R.getJson(0, "连接超时，默认超时时间为5分钟", "");
-					break;
-				}
-				user = (ZUser) ActionContext.getContext().getSession()
-						.get("user");
-				if (user == null) {
-					result = R.getJson(-999, "检测到您还没有进行登录，请进行登录", "");
-					break;
-				}
-				String threadId2 = cDao.getThreadId(user.getId(), 0);
-				if (i > 0 && !threadId2.equals(threadId)) {// 非第一次进入轮询，且连接数大于1则退出轮询，从逻辑上实现断开前一次的连接(防止重复连接)
-					result = R.getJson(500, "自动断开前一次的连接，当前可运行进程编号为："
-							+ threadId2, "");
-					break;
-				}
-				List<Long> unAckList = (List<Long>) session1
-						.getAttribute("UnACKAlarm");
-				List<Long> unAckList2;
-				Boolean isCentral = Utils.isCentral(user.getId());
-				if (isCentral) {
-					unAckList2 = aDao.getUnACKAlarmIds();
-				} else {
-					unAckList2 = aDao.getUnACKAlarmIds(user.getId());
-				}
-				if (unAckList == null) {// 缓存数组为空，说明之前一个报警都没有，所以要提示报警,并且设置值
-					if (unAckList2 != null && unAckList2.size() > 0) {
-						session1.setAttribute("UnACKAlarm", unAckList2);
-						result = R.getJson(1, "请注意，线路安全告警！", "");
-						break;
-					}
-				} else {// 如果有缓存数组,缓存数组没有全包含报警数组，说明有新报警所以要提示报警
-					if (!unAckList.containsAll(unAckList2)) {
-						session1.setAttribute("UnACKAlarm", unAckList2);
-						result = R.getJson(1, "请注意，线路安全告警！", "");
-						break;
-					}
-				}
-				Thread.sleep(1000 * 1);
-				i = 1;
+			List<Long> unAckList2;
+			Boolean isCentral = Utils.isCentral(user.getId());
+			if (isCentral) {
+				unAckList2 = aDao.getUnACKAlarmIds();
+			} else {
+				unAckList2 = aDao.getUnACKAlarmIds(user.getId());
 			}
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
+			if (unAckList2 != null && unAckList2.size() > 0) {
+				result = R.getJson(1, "", "");
+				return SUCCESS;
+			}
+		} catch (Exception e) {
 			e.printStackTrace();
 			result = R.getJson(0, "线程出错，需重新发送请求", "");
-		} finally {
 		}
-		System.out.println("本次连接耗时:"
-				+ (System.currentTimeMillis() / 1000 - startTime) + "秒");
-
 		return SUCCESS;
 	}
 
+	/*
+	 * public String checkAlarm() { ZAlarmDao aDao = new ZAlarmDaoImp(); long
+	 * startTime = System.currentTimeMillis() / 1000; HttpSession session1 =
+	 * ServletActionContext.getRequest().getSession(); Map<String, Object>
+	 * session = ActionContext.getContext().getSession(); ZUser user = (ZUser)
+	 * session.get("user"); if (user == null) { result = R.getJson(-999,
+	 * "检测到您还没有进行登录，请进行登录", ""); return SUCCESS; } String threadId =
+	 * System.currentTimeMillis() + Utils.ran6(); ZConnectCtlDao cDao = new
+	 * ZConnectCtlDaoImp(); if (!cDao.saveOrUpdate(user.getId(), 0, threadId)) {
+	 * System.out.println("建立告警长连接失败"); result = R.getJson(0, "连接失败请重试", "");
+	 * return SUCCESS; } try { int i = 0; while (true) { if
+	 * ((System.currentTimeMillis() / 1000) - startTime > 5 * 60) { result =
+	 * R.getJson(0, "连接超时，默认超时时间为5分钟", ""); break; } user = (ZUser)
+	 * ActionContext.getContext().getSession() .get("user"); if (user == null) {
+	 * result = R.getJson(-999, "检测到您还没有进行登录，请进行登录", ""); break; } String
+	 * threadId2 = cDao.getThreadId(user.getId(), 0); if (i > 0 &&
+	 * !threadId2.equals(threadId)) {//
+	 * 非第一次进入轮询，且连接数大于1则退出轮询，从逻辑上实现断开前一次的连接(防止重复连接) result = R.getJson(500,
+	 * "自动断开前一次的连接，当前可运行进程编号为：" + threadId2, ""); break; } List<Long> unAckList
+	 * = (List<Long>) session1 .getAttribute("UnACKAlarm"); List<Long>
+	 * unAckList2; Boolean isCentral = Utils.isCentral(user.getId()); if
+	 * (isCentral) { unAckList2 = aDao.getUnACKAlarmIds(); } else { unAckList2 =
+	 * aDao.getUnACKAlarmIds(user.getId()); } if (unAckList == null) {//
+	 * 缓存数组为空，说明之前一个报警都没有，所以要提示报警,并且设置值 if (unAckList2 != null &&
+	 * unAckList2.size() > 0) { session1.setAttribute("UnACKAlarm", unAckList2);
+	 * result = R.getJson(1, "请注意，线路安全告警！", ""); break; } } else {//
+	 * 如果有缓存数组,缓存数组没有全包含报警数组，说明有新报警所以要提示报警 if
+	 * (!unAckList.containsAll(unAckList2)) {
+	 * session1.setAttribute("UnACKAlarm", unAckList2); result = R.getJson(1,
+	 * "请注意，线路安全告警！", ""); break; } } Thread.sleep(1000 * 1); i = 1; } } catch
+	 * (InterruptedException e) { // TODO Auto-generated catch block
+	 * e.printStackTrace(); result = R.getJson(0, "线程出错，需重新发送请求", ""); } finally
+	 * { } System.out.println("本次连接耗时:" + (System.currentTimeMillis() / 1000 -
+	 * startTime) + "秒");
+	 * 
+	 * return SUCCESS; }
+	 */
 
 	/**
 	 * 3.2检测是否有最新的报警信息(返回经纬度,短轮询)
@@ -250,54 +251,57 @@ public class ZAlarmAction extends ActionSupport {
 	public String checkAlarmForLatLon() {
 		ZAlarmDao aDao = new ZAlarmDaoImp();
 		Map<String, Object> session = ActionContext.getContext().getSession();
-		HttpSession session1 = ServletActionContext.getRequest().getSession();
 		ZUser user = (ZUser) session.get("user");
 		if (user == null) {
 			result = R.getJson(-999, "检测到您还没有进行登录，请进行登录", "");
 			return SUCCESS;
 		}
 		Boolean isCentral = Utils.isCentral(user.getId());
-		List<Long> unAckList = (List<Long>) session1
-				.getAttribute("UnACKAlarm2");
-		List<Long> unAckList2;
+		Set<String> wellList;
 		if (isCentral) {
-			unAckList2 = aDao.getUnACKAlarmIds();
+			wellList = aDao.getUnACKWellLatLon();
 		} else {
-			unAckList2 = aDao.getUnACKAlarmIds(user.getId());
+			wellList = aDao.getUnACKWellLatLon(user.getId());
 		}
-		if (unAckList == null) {// 缓存数组为空，说明之前一个报警都没有，所以要提示报警,并且设置值
-			if (unAckList2 != null && unAckList2.size() > 0) {
-				Set<String> wellList = null;
-				if (isCentral) {
-					wellList = aDao.getUnACKWellLatLon();
-				} else {
-					wellList = aDao.getUnACKWellLatLon(user.getId());
-				}
-				session1.setAttribute("UnACKAlarm2", unAckList2);
-				result = R.getJson(1, "请注意，线路安全告警！", wellList);
-				return SUCCESS;
-			}
-		} else {// 如果有缓存数组,缓存数组没有全包含报警数组，说明有新报警所以要提示报警
-			if (!unAckList.containsAll(unAckList2)) {
-				Set<String> wellList = null;
-				if (isCentral) {
-					wellList = aDao.getUnACKWellLatLon();
-				} else {
-					wellList = aDao.getUnACKWellLatLon(user.getId());
-				}
-				session1.setAttribute("UnACKAlarm2", unAckList2);
-				result = R.getJson(1, "请注意，线路安全告警！", wellList);
-				return SUCCESS;
-			}
+		if (wellList != null && wellList.size() > 0) {
+			result = R.getJson(1, "请注意，线路安全告警！", wellList);
+			return SUCCESS;
 		}
 		result = R.getJson(0, "无报警", "");
 		return SUCCESS;
 	}
 
+	/*
+	 * public String checkAlarmForLatLon() { ZAlarmDao aDao = new
+	 * ZAlarmDaoImp(); Map<String, Object> session =
+	 * ActionContext.getContext().getSession(); HttpSession session1 =
+	 * ServletActionContext.getRequest().getSession(); ZUser user = (ZUser)
+	 * session.get("user"); if (user == null) { result = R.getJson(-999,
+	 * "检测到您还没有进行登录，请进行登录", ""); return SUCCESS; } Boolean isCentral =
+	 * Utils.isCentral(user.getId()); List<Long> unAckList = (List<Long>)
+	 * session1 .getAttribute("UnACKAlarm2"); List<Long> unAckList2; if
+	 * (isCentral) { unAckList2 = aDao.getUnACKAlarmIds(); } else { unAckList2 =
+	 * aDao.getUnACKAlarmIds(user.getId()); } if (unAckList == null) {//
+	 * 缓存数组为空，说明之前一个报警都没有，所以要提示报警,并且设置值 if (unAckList2 != null &&
+	 * unAckList2.size() > 0) { Set<String> wellList = null; if (isCentral) {
+	 * wellList = aDao.getUnACKWellLatLon(); } else { wellList =
+	 * aDao.getUnACKWellLatLon(user.getId()); }
+	 * session1.setAttribute("UnACKAlarm2", unAckList2); result = R.getJson(1,
+	 * "请注意，线路安全告警！", wellList); return SUCCESS; } } else {//
+	 * 如果有缓存数组,缓存数组没有全包含报警数组，说明有新报警所以要提示报警 if
+	 * (!unAckList.containsAll(unAckList2)) { Set<String> wellList = null; if
+	 * (isCentral) { wellList = aDao.getUnACKWellLatLon(); } else { wellList =
+	 * aDao.getUnACKWellLatLon(user.getId()); }
+	 * session1.setAttribute("UnACKAlarm2", unAckList2); result = R.getJson(1,
+	 * "请注意，线路安全告警！", wellList); return SUCCESS; } } result = R.getJson(0,
+	 * "无报警", ""); return SUCCESS; }
+	 */
+
 	/**
 	 * 4.获取最新报警信息
 	 */
 	public String getLatestAlarm() {
+		System.out.println("2");
 		ZAlarmDao aDao = new ZAlarmDaoImp();
 		Map<String, Object> session = ActionContext.getContext().getSession();
 		ZUser user = (ZUser) session.get("user");

@@ -1,5 +1,6 @@
 package org.start;
 
+import java.io.IOException;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.List;
@@ -13,21 +14,27 @@ import org.dao.ZWebsocketCtlDao;
 import org.dao.imp.ZConnectCtlDaoImp;
 import org.dao.imp.ZGxHostDaoImp;
 import org.dao.imp.ZWebsocketCtlDaoImp;
-import org.hibernate.connection.ProxoolConnectionProvider;
-import org.logicalcobwebs.proxool.HouseKeeperController;
-import org.logicalcobwebs.proxool.HouseKeeperThread;
 import org.logicalcobwebs.proxool.ProxoolFacade;
-import org.logicalcobwebs.proxool.admin.servlet.AdminServlet;
 import org.model.ZGxHost;
-import org.model.ZWebsocketCtl;
 
 import com.mysql.jdbc.AbandonedConnectionCleanupThread;
-import com.sun.org.apache.xml.internal.utils.ThreadControllerWrapper.ThreadController;
 
 public class ListenerForConnect implements ServletContextListener {
 
 	@Override
 	public void contextDestroyed(ServletContextEvent event) {
+		String cmd[] = { "sh /home/socketControl/closeLong.sh ",
+				"sh /home/socketControl/closeLong1.sh ",
+				"sh /home/socketControl/closeShort.sh ",
+				"sh /home/socketControl/closeShort1.sh " };
+		try {
+			for (String str : cmd) {
+				Runtime.getRuntime().exec(str.toString());
+				Thread.sleep(1000);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		System.out.println("close proxool");
 		// 自动关闭Proxool
 		ProxoolFacade.shutdown(0);
@@ -66,25 +73,24 @@ public class ListenerForConnect implements ServletContextListener {
 		// 光纤websocket重置
 		ZWebsocketCtlDao wDao = new ZWebsocketCtlDaoImp();
 		wDao.deleteAll();
+
 		// // 光纤线程自动启动
-		// List<ZGxHost> list = gDao.getAllList(0, -1);
-		// while (true) {
-		// for (ZGxHost gx : list) {
-		// // try {
-		// // Runtime.getRuntime().exec(
-		// // "sh /home/socketControl/socketStart.sh " + gx.getHost()
-		// // + " " + gx.getPort());
-		// // } catch (Exception e) {
-		// // e.printStackTrace();
-		// // }
-		// Demo_ver_7 thread = new Demo_ver_7(gx.getHost(), gx.getPort());
-		// thread.start();
-		// try {
-		// thread.join();
-		// } catch (InterruptedException e) {
-		// e.printStackTrace();
-		// }
-		// }
-		// }
+		List<ZGxHost> list = gDao.getAllList(0, -1);
+		StringBuilder str = new StringBuilder();
+		for (ZGxHost gx : list) {
+			str.setLength(0);
+			if (gx.getPort().equals("2009")) {
+				str.append("sh /home/socketControl/socketSafe.sh "
+						+ gx.getHost() + " " + gx.getPort());
+			} else {
+				str.append("sh /home/socketControl/socketGxxljk.sh "
+						+ gx.getHost() + " " + gx.getPort());
+			}
+			try {
+				Runtime.getRuntime().exec(str.toString());
+			} catch (IOException e) {
+				System.out.println(gx.getHost() + "连接失败");
+			}
+		}
 	}
 }

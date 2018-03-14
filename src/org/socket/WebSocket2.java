@@ -1,23 +1,17 @@
 package org.socket;
 
-import java.io.BufferedWriter;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.ConnectException;
+import java.net.NoRouteToHostException;
 import java.net.Socket;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import javax.servlet.http.HttpSession;
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
 import javax.websocket.OnMessage;
@@ -25,29 +19,20 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.struts2.ServletActionContext;
-import org.dao.ZConnectCtlDao;
 import org.dao.ZGxHostDao;
 import org.dao.ZWebsocketCtlDao;
-import org.dao.imp.ZConnectCtlDaoImp;
 import org.dao.imp.ZGxHostDaoImp;
 import org.dao.imp.ZWebsocketCtlDaoImp;
 import org.model.HostBean;
 import org.model.WaveBean;
-import org.model.ZConnectCtl;
 import org.model.ZGxHost;
 import org.model.ZWebsocketCtl;
-//import org.model.ZUser;
 import org.tools.JsonUtils;
-import org.tools.Utils;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mysql.fabric.xmlrpc.base.Array;
-import com.mysql.jdbc.Buffer;
 
 //import com.opensymphony.xwork2.ActionContext;
 
@@ -113,14 +98,14 @@ class SocketThread2 extends Thread {
 	public int state = 1;
 	private int enter = 0;
 	private int k = 0;
-	private String threadId;
+	private Long threadId;
 
 	public SocketThread2(String host, String port, Session session, Long userid) {
 		this.host = host;
 		this.port = port;
 		this.session = session;
 		this.userid = userid;
-		this.threadId = System.currentTimeMillis() + "";
+		this.threadId = System.currentTimeMillis();
 	}
 
 	public void run() {
@@ -166,7 +151,8 @@ class SocketThread2 extends Thread {
 			out.flush();
 			dis = new DataInputStream(socket.getInputStream());
 
-			byte b[] = null;
+			// byte b[] = null;
+			ByteBuffer bb = null;
 			StringBuilder result = new StringBuilder();// 结果字符串
 
 			int l = 0;
@@ -181,40 +167,47 @@ class SocketThread2 extends Thread {
 				// System.out.println(k++);
 				int len = dis.readInt();
 				if (len < 1024) {
-					b = new byte[len];
-					dis.read(b);
+					// b = new byte[len];
+					// dis.read(b);
+					// b = null;
+					bb = ByteBuffer.allocate(len);
+					dis.read(bb.array());
+					bb.clear();
 					// result = new String(b, "UTF-8");
 					// result.append(new String(b));
 					// System.out.println("服务器返回数据1：" + result);
-					b = null;
 				} else {
 					// 以1024字节为一个单位进行数据读取防止内存溢出
-					for (int i = 0; i < len; i = i + 1024) {
-						if (1024 + i > len) {
+					for (int i = len; i > 0; i = i - 1024) {
+						if (i < 1024) {
+							bb = ByteBuffer.allocate(len);
+							dis.read(bb.array());
+							result.append(new String(bb.array(), "UTF-8"));
 							// System.out.println("len % 1024=" + len % 1024);
-							b = new byte[len % 1024];
-							if (dis.read(b) == -1) {
-								break;
-							}
-							// result = result + new String(b, "UTF-8");
-							result.append(new String(b, "UTF-8"));
-							// System.out.println("0");
+							// b = new byte[len];
+							// if (dis.read(b) == -1) {
+							// break;
+							// }
+							// result.append(new String(b, "UTF-8"));
 							// System.out.println("服务器返回数据1："
 							// + new String(b, "UTF-8") + "***end***");
 						} else {
-							b = new byte[1024];
-							if (dis.read(b) == -1) {
-								break;
-							}
-							// result = result + new String(b, "UTF-8");
-							result.append(new String(b, "UTF-8"));
+							bb = ByteBuffer.allocate(1024);
+							dis.read(bb.array());
+							result.append(new String(bb.array(), "UTF-8"));
+							// b = new byte[1024];
+							// if (dis.read(b) == -1) {
+							// break;
+							// }
+							// result.append(new String(b, "UTF-8"));
 							// result.append(new String(b));
 							// System.out.println("1");
 							// System.out.println("服务器返回数据1："
 							// + new String(b, "UTF-8") + "***end***");
 						}
 						Thread.sleep(1);
-						b = null;
+						bb.clear();
+						// b=null;
 					}
 				}
 				if (result.indexOf("\"command_code\":\"5000002\"") != -1) {// 将接收到的波形数据实时传输给前端
@@ -260,7 +253,7 @@ class SocketThread2 extends Thread {
 				l = 1;
 				Thread.sleep(150);
 			}
-		} catch (ConnectException e) {
+		} catch (ConnectException | NoRouteToHostException e) {
 			System.out.println("连接异常,3秒后重连");
 			k++;
 			if (k == 5) {
@@ -273,36 +266,37 @@ class SocketThread2 extends Thread {
 						session.getBasicRemote().sendText(
 								mapper.writeValueAsString(map));
 					} catch (JsonProcessingException e1) {
-						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					} catch (IOException e1) {
-						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
 				}
 			} else {
 				try {
-					if (socket != null) {
+					if (socket != null && !socket.isClosed())
 						socket.close();
-						out.close();
-						dis.close();
-					}
+					out.close();
+					dis.close();
 					socket = null;
-				} catch (IOException e1) {
+					out = null;
+					dis = null;
+				} catch (Exception e1) {
 					e1.printStackTrace();
 				}
 				connect();
 			}
 		} catch (IOException e) {
+			e.printStackTrace();
 			System.out.println("websocket服务器断连，3秒后自动重连");
 			try {
-				if (socket != null) {
+				if (socket != null && !socket.isClosed())
 					socket.close();
-					out.close();
-					dis.close();
-				}
+				out.close();
+				dis.close();
 				socket = null;
-			} catch (IOException e1) {
+				out = null;
+				dis = null;
+			} catch (Exception e1) {
 				e1.printStackTrace();
 			}
 			connect();
@@ -313,15 +307,16 @@ class SocketThread2 extends Thread {
 			k = 0;
 			System.out.println("中断异常");
 		} finally {
-			System.out.println("websocket over...websocket over...websocket over...");
+			System.out.println("Thread over...");
 			try {
-				if (socket != null) {
+				if (socket != null && !socket.isClosed())
 					socket.close();
-					out.close();
-					dis.close();
-				}
+				out.close();
+				dis.close();
 				socket = null;
-			} catch (IOException e1) {
+				out = null;
+				dis = null;
+			} catch (Exception e1) {
 				e1.printStackTrace();
 			}
 		}

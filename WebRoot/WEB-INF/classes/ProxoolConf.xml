@@ -5,7 +5,7 @@
 	<proxool>
 		<alias>proxoolPool</alias>
 		<!--proxool只能管理由自己产生的连接 -->
-		<driver-url>jdbc:mysql://120.76.22.150:3306/zabbix?characterEncoding=UTF-8&amp;autoReconnect=true
+		<driver-url>jdbc:mysql://localhost:3306/zabbix?characterEncoding=UTF-8&amp;autoReconnect=true
 		</driver-url>
 		<!-- <driver-url>jdbc:mysql://192.168.1.100:3306/zabbix?characterEncoding=UTF-8&amp;autoReconnect=true 
 			</driver-url> -->
@@ -15,8 +15,8 @@
 		<driver-properties>
 			<property name="user" value="root" />
 			<!-- <property name="user" value="root" /> -->
-			<!-- <property name="password" value="1qaz2wsx3edc" />-->
-			<property name="password" value="wanhai168" /> 
+			<!-- <property name="password" value="1qaz2wsx3edc" /> -->
+			<property name="password" value="123456" />
 		</driver-properties>
 		<!-- proxool自动侦察各个连接状态的时间间隔(毫秒),侦察到空闲的连接就马上回收,超时的销毁 -->
 		<house-keeping-sleep-time>180000</house-keeping-sleep-time>

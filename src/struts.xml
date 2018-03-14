@@ -21,11 +21,9 @@
 	</package>
 	<constant name="struts.action.excludePattern" value="/ws/.*,ws://.*"></constant>
 	<package name="nolog" extends="json-default" namespace="/">
-		<action name="startSocket" class="org.action.ZGxHostAction" method="startSocket">
-			<result type="json" name="success">
-				<param name="root">result</param>
-			</result>
-		</action>
+		<!-- <action name="startSocket" class="org.action.ZGxHostAction" method="startSocket"> 
+			<result type="json" name="success"> <param name="root">result</param> </result> 
+			</action> -->
 	</package>
 	<package name="ajax" extends="json-default,global" namespace="/">
 		<action name="login" class="org.action.ZUserAction" method="login">
@@ -43,12 +41,14 @@
 				<param name="root">result</param>
 			</result>
 		</action>
-		<action name="deleteUser" class="org.action.ZUserAction" method="deleteUser">
+		<action name="deleteUser" class="org.action.ZUserAction"
+			method="deleteUser">
 			<result type="json" name="success">
 				<param name="root">result</param>
 			</result>
 		</action>
-		<action name="updateUser" class="org.action.ZUserAction" method="updateUser">
+		<action name="updateUser" class="org.action.ZUserAction"
+			method="updateUser">
 			<result type="json" name="success">
 				<param name="root">result</param>
 			</result>
@@ -78,8 +78,8 @@
 				<param name="root">result</param>
 			</result>
 		</action>
-		
-		
+
+
 
 		<!-- Exception -->
 		<action name="ackException" class="org.action.ZExceptionAction"
@@ -106,9 +106,9 @@
 				<param name="root">result</param>
 			</result>
 		</action>
-		
+
 		<!-- Exception -->
-		
+
 		<!-- Log -->
 		<action name="deleteLog" class="org.action.ZLogAction" method="deleteLog">
 			<result type="json" name="success">
@@ -126,7 +126,7 @@
 			</result>
 		</action>
 		<!-- Log -->
-		
+
 		<!-- GxHost -->
 		<action name="getGxHostList" class="org.action.ZGxHostAction"
 			method="getGxHostList">
@@ -214,12 +214,14 @@
 				<param name="root">result</param>
 			</result>
 		</action>
-		<action name="ackAllAlarm" class="org.action.ZAlarmAction" method="ackAllAlarm">
+		<action name="ackAllAlarm" class="org.action.ZAlarmAction"
+			method="ackAllAlarm">
 			<result type="json" name="success">
 				<param name="root">result</param>
 			</result>
 		</action>
-		<action name="ackAllException" class="org.action.ZExceptionAction" method="ackAllException">
+		<action name="ackAllException" class="org.action.ZExceptionAction"
+			method="ackAllException">
 			<result type="json" name="success">
 				<param name="root">result</param>
 			</result>

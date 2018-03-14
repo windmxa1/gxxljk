@@ -1,5 +1,6 @@
 package org.action;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,33 +55,6 @@ public class ZGxHostAction extends ActionSupport {
 	}
 
 	/**
-	 * 启动光纤通信线程
-	 */
-	public String startSocket() {
-		ZGxHostDao gDao = new ZGxHostDaoImp();
-		// 光纤线程启动
-		List<ZGxHost> list = gDao.getAllList(0, -1);
-		while (true) {
-			for (ZGxHost gx : list) {
-				// try {
-				// Runtime.getRuntime().exec(
-				// "sh /home/socketControl/socketStart.sh " + gx.getHost()
-				// + " " + gx.getPort());
-				// } catch (Exception e) {
-				// e.printStackTrace();
-				// }
-				Demo_ver_7 thread = new Demo_ver_7(gx.getHost(), gx.getPort());
-				thread.start();
-				try {
-					thread.join();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-	}
-
-	/**
 	 * 判断是否为总局工作人员
 	 * 
 	 * @param userid
@@ -105,10 +79,21 @@ public class ZGxHostAction extends ActionSupport {
 		}
 		ZGxHostDao gDao = new ZGxHostDaoImp();
 		if (gDao.addGxHost(gxHost) > 0) {
-			MyThread thread = new MyThread(host, port);
-			// thread.setDaemon(true);
-			thread.start();
-			result = R.getJson(1, "添加成功，正在等待激活。。", "");
+			StringBuilder str = new StringBuilder();
+			if (port.equals("2009")) {
+				str.append("sh /home/socketControl/socketSafe.sh " + host + " "
+						+ port);
+			} else {
+				str.append("sh /home/socketControl/socketGxxljk.sh " + host
+						+ " " + port);
+			}
+			try {
+				Runtime.getRuntime().exec(str.toString());
+				str.setLength(0);
+				result = R.getJson(1, "正在连接，请稍后片刻刷新列表。。。", "");
+			} catch (IOException e) {
+				result = R.getJson(0, host + "连接失败，请手动重连", "");
+			}
 		} else {
 			result = R.getJson(0, "添加失败，请重试。。", "");
 		}
@@ -120,8 +105,42 @@ public class ZGxHostAction extends ActionSupport {
 	 */
 	public String delGxHost() {
 		ZGxHostDao gDao = new ZGxHostDaoImp();
+		String[] cmd1 = null;
+		String[] cmd2 = null;
 		if (gDao.delGxHost(id)) {
-			result = R.getJson(1, "删除成功", "");
+			StringBuilder str = new StringBuilder();
+			if (port.equals("2009")) {
+				cmd1 = new String[] {
+						"/bin/sh",
+						"-c",
+						" kill -9 `ps -ef | grep 'socketSafe.sh " + host
+								+ " ' | awk '{print $2}'`" };
+				cmd2 = new String[] {
+						"/bin/sh",
+						"-c",
+						" kill -9 `ps -ef | grep 'socketSafe.jar " + host
+								+ " ' | awk '{print $2}'`" };
+			} else {
+				cmd1 = new String[] {
+						"/bin/sh",
+						"-c",
+						" kill -9 `ps -ef | grep 'socketGxxljk.sh " + host
+								+ " ' | awk '{print $2}'`" };
+				cmd2 = new String[] {
+						"/bin/sh",
+						"-c",
+						" kill -9 `ps -ef | grep 'socketGxxljk.jar " + host
+								+ " ' | awk '{print $2}'`" };
+			}
+			try {
+				Runtime.getRuntime().exec(cmd1);
+				Thread.sleep(1000);
+				Runtime.getRuntime().exec(cmd2);
+				str.setLength(0);
+				result = R.getJson(1, "删除成功", "");
+			} catch (Exception e) {
+				result = R.getJson(0, "删除失败", "");
+			}
 		} else {
 			result = R.getJson(0, "删除失败", "");
 		}
@@ -132,10 +151,7 @@ public class ZGxHostAction extends ActionSupport {
 	 * 激活光纤设备
 	 */
 	public String activeGxHost() {
-		MyThread thread = new MyThread(host, port);
-		// thread.setDaemon(true);
-		thread.start();
-		result = R.getJson(1, "设备激活中，请稍后", "");
+		result = R.getJson(1, "当前版本不需要手动激活", "");
 		return SUCCESS;
 	}
 
