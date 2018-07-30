@@ -14,7 +14,7 @@ public class ZGxHostDaoImp implements ZGxHostDao {
 	public List<ZGxHost> getAllList(Integer start, Integer limit) {
 		try {
 			Session session = HibernateSessionFactory.getSession();
-			Query query = session.createQuery("from ZGxHost");
+			Query query = session.createQuery("from ZGxHost order by sort");
 			if (start == null) {
 				start = 0;
 			}
@@ -25,6 +25,7 @@ public class ZGxHostDaoImp implements ZGxHostDao {
 			} else {
 				query.setMaxResults(limit);
 			}
+			query.setFirstResult(start);
 			List<ZGxHost> list = query.list();
 			return list;
 		} catch (Exception e) {
@@ -179,7 +180,7 @@ public class ZGxHostDaoImp implements ZGxHostDao {
 		try {
 			Session session = HibernateSessionFactory.getSession();
 			SQLQuery query = session
-					.createSQLQuery("select gh.* from z_gx_host gh,z_user_belong ub where gh.belong=ub.belong and ub.user_id = ?");
+					.createSQLQuery("select gh.* from z_gx_host gh,z_user_belong ub where gh.belong=ub.belong and ub.user_id = ? order by sort");
 			if (start == null) {
 				start = 0;
 			}
@@ -190,6 +191,7 @@ public class ZGxHostDaoImp implements ZGxHostDao {
 			} else {
 				query.setMaxResults(limit);
 			}
+			query.setFirstResult(start);
 			query.setParameter(0, userid);
 			query.addEntity(ZGxHost.class);
 			List<ZGxHost> list = query.list();
@@ -215,6 +217,33 @@ public class ZGxHostDaoImp implements ZGxHostDao {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return 0L;
+		} finally {
+			HibernateSessionFactory.closeSession();
+		}
+	}
+
+	@Override
+	public Boolean update(ZGxHost host) {
+		try {
+			Session session = HibernateSessionFactory.getSession();
+			Transaction ts = session.beginTransaction();
+			Query query = session.createQuery("from ZGxHost where id = ?");
+			query.setParameter(0, host.getId());
+			query.setMaxResults(1);
+			ZGxHost host1 = (ZGxHost) query.uniqueResult();
+			if (host.getBelong() != null)
+				host1.setBelong(host.getBelong());
+			if (host.getDescription() != null)
+				host1.setDescription(host.getDescription());
+			if (host.getName() != null)
+				host1.setName(host.getName());
+			if (host.getSort() != null)
+				host1.setSort(host.getSort());
+			ts.commit();
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
 		} finally {
 			HibernateSessionFactory.closeSession();
 		}

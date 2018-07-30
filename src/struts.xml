@@ -140,6 +140,12 @@
 				<param name="root">result</param>
 			</result>
 		</action>
+		<action name="updateGxHost" class="org.action.ZGxHostAction"
+			method="updateGxHost">
+			<result type="json" name="success">
+				<param name="root">result</param>
+			</result>
+		</action>
 		<action name="delGxHost" class="org.action.ZGxHostAction"
 			method="delGxHost">
 			<result type="json" name="success">

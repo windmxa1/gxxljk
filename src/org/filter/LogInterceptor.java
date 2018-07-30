@@ -36,18 +36,19 @@ public class LogInterceptor extends AbstractInterceptor {
 				+ "--"
 				+ new SimpleDateFormat("yyyy/MM/dd/HH:mm:ss")
 						.format(new Date()) + "--" + actionName);
-		if(actionName.equals("activeGxHost")){
-			System.out.println("active "+request.getParameter("host")+"|"+request.getParameter("port"));
+		if (actionName.equals("activeGxHost")) {
+			System.out.println("active " + request.getParameter("host") + "|"
+					+ request.getParameter("port"));
 		}
 		ZLogDao lDao = new ZLogDaoImp();
-
 		if (actionName.equals("getLogList")) {// 不记录日志，但需要权限控制
 			// -----权限------
 			ZUser u = (ZUser) request.getSession().getAttribute("user");
 			if (u != null) {
 				List<VRaId> list = (List<VRaId>) session.get("raList");
-//				System.out.println(list.size());
+				// System.out.println(list.size());
 				for (VRaId vv : list) {
+//					System.out.println(vv.getAction());
 					if (actionName.equals(vv.getAction())) {
 						return invocation.invoke();
 					}
@@ -81,7 +82,7 @@ public class LogInterceptor extends AbstractInterceptor {
 			ZUser u = (ZUser) request.getSession().getAttribute("user");
 			if (u != null) {
 				List<VRaId> list = (List<VRaId>) session.get("raList");
-//				System.out.println(list.size());
+				// System.out.println(list.size());
 				for (VRaId vv : list) {
 					if (actionName.equals(vv.getAction())) {
 						return invocation.invoke();
@@ -99,7 +100,7 @@ public class LogInterceptor extends AbstractInterceptor {
 			ZUser u = (ZUser) request.getSession().getAttribute("user");
 			if (u != null) { // 已登录
 				List<VRaId> list = (List<VRaId>) session.get("raList");
-//				System.out.println("权限个数："+list.size());
+				// System.out.println("权限个数："+list.size());
 				for (VRaId vv : list) {
 					// 有权限
 					if (actionName.equals(vv.getAction())) {

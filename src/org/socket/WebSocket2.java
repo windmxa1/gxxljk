@@ -44,7 +44,6 @@ public class WebSocket2 {
 	@OnMessage
 	public void onMessage(String message, Session session) {
 		System.out.println(message);
-
 		ObjectMapper mapper = JsonUtils.getInstance();
 		try {
 			hb = mapper.readValue(message, HostBean.class);
@@ -71,7 +70,7 @@ public class WebSocket2 {
 			thread.state = 0;
 		}
 		System.out.println("error:state=" + thread.state);
-		// error.printStackTrace();
+		 error.printStackTrace();
 	}
 
 	@OnOpen

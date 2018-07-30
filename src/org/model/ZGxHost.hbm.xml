@@ -28,5 +28,8 @@
         <property name="port" type="java.lang.String">
             <column name="port" length="20" not-null="true" />
         </property>
+        <property name="sort" type="java.lang.Integer">
+            <column name="sort" length="1" not-null="true" />
+        </property>
     </class>
 </hibernate-mapping>

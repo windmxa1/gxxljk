@@ -28,6 +28,7 @@ public class ZGxHostAction extends ActionSupport {
 	private String description;
 	private String belong;
 	private Integer status;
+	private Integer sort;
 	private String port;
 
 	/**
@@ -73,7 +74,7 @@ public class ZGxHostAction extends ActionSupport {
 	 * 添加光纤设备
 	 */
 	public String addGxHost() {
-		ZGxHost gxHost = new ZGxHost(host, name, belong, status, port);
+		ZGxHost gxHost = new ZGxHost(host, name, belong, status, port, sort);
 		if (description != null) {
 			gxHost.setDescription(description);
 		}
@@ -96,6 +97,20 @@ public class ZGxHostAction extends ActionSupport {
 			}
 		} else {
 			result = R.getJson(0, "添加失败，请重试。。", "");
+		}
+		return SUCCESS;
+	}
+
+	/**
+	 * 修改光纤列表
+	 */
+	public String updateGxHost() {
+		ZGxHost gxHost = new ZGxHost(id, name, description, belong, sort);
+		ZGxHostDao gDao = new ZGxHostDaoImp();
+		if (gDao.update(gxHost)) {
+			result = R.getJson(1, "修改成功", "");
+		} else {
+			result = R.getJson(0, "修改失败", "");
 		}
 		return SUCCESS;
 	}
@@ -245,6 +260,14 @@ public class ZGxHostAction extends ActionSupport {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public Integer getSort() {
+		return sort;
+	}
+
+	public void setSort(Integer sort) {
+		this.sort = sort;
 	}
 
 }

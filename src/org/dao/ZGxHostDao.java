@@ -28,6 +28,10 @@ public interface ZGxHostDao {
 	 */
 	public Long addGxHost(ZGxHost host);
 	/**
+	 * 修改光纤信息
+	 */
+	public Boolean update(ZGxHost host);
+	/**
 	 * 删除光纤
 	 */
 	public Boolean delGxHost(Long id);

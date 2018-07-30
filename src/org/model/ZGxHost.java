@@ -15,6 +15,7 @@ public class ZGxHost implements java.io.Serializable {
 	private String belong;
 	private Integer status;
 	private String port;
+	private Integer sort;
 
 	// Constructors
 
@@ -24,12 +25,22 @@ public class ZGxHost implements java.io.Serializable {
 
 	/** minimal constructor */
 	public ZGxHost(String host, String name, String belong, Integer status,
-			String port) {
+			String port, Integer sort) {
 		this.host = host;
 		this.name = name;
 		this.belong = belong;
 		this.status = status;
 		this.port = port;
+		this.sort = sort;
+	}
+
+	public ZGxHost(Long id, String name, String description, String belong,
+			Integer sort) {
+		this.id = id;
+		this.name = name;
+		this.description = description;
+		this.belong = belong;
+		this.sort = sort;
 	}
 
 	/** full constructor */
@@ -99,6 +110,14 @@ public class ZGxHost implements java.io.Serializable {
 
 	public void setPort(String port) {
 		this.port = port;
+	}
+
+	public Integer getSort() {
+		return sort;
+	}
+
+	public void setSort(Integer sort) {
+		this.sort = sort;
 	}
 
 }
