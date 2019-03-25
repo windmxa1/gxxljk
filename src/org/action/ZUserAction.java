@@ -121,6 +121,16 @@ public class ZUserAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	public String getRunTime(){
+		ZUserDao uDao = new ZUserDaoImp();
+		if(uDao.getRunTime((System.currentTimeMillis()/1000)-120)>0){
+			result=R.getJson(1,"","");
+		}else{
+			result=R.getJson(0,"","");
+		}
+		return SUCCESS;
+	}
+	
 	public String getSession()throws Exception{
 		Map<String, Object> session = ActionContext.getContext().getSession();
 		ZUser user = (ZUser) session.get("user");

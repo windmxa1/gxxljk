@@ -75,6 +75,7 @@ public class ListenerForConnect implements ServletContextListener {
 		wDao.deleteAll();
 
 		// // 光纤线程自动启动
+		/*
 		List<ZGxHost> list = gDao.getAllList(0, -1);
 		StringBuilder str = new StringBuilder();
 		for (ZGxHost gx : list) {
@@ -92,5 +93,6 @@ public class ListenerForConnect implements ServletContextListener {
 				System.out.println(gx.getHost() + "连接失败");
 			}
 		}
+		*/
 	}
 }

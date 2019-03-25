@@ -80,6 +80,7 @@ public class ZGxHostAction extends ActionSupport {
 		}
 		ZGxHostDao gDao = new ZGxHostDaoImp();
 		if (gDao.addGxHost(gxHost) > 0) {
+			/*
 			StringBuilder str = new StringBuilder();
 			if (port.equals("2009")) {
 				str.append("sh /home/socketControl/socketSafe.sh " + host + " "
@@ -91,10 +92,13 @@ public class ZGxHostAction extends ActionSupport {
 			try {
 				Runtime.getRuntime().exec(str.toString());
 				str.setLength(0);
+				
 				result = R.getJson(1, "正在连接，请稍后片刻刷新列表。。。", "");
 			} catch (IOException e) {
 				result = R.getJson(0, host + "连接失败，请手动重连", "");
 			}
+			*/
+			result = R.getJson(1, "正在连接，请稍后片刻刷新列表。。。", "");
 		} else {
 			result = R.getJson(0, "添加失败，请重试。。", "");
 		}
@@ -120,9 +124,10 @@ public class ZGxHostAction extends ActionSupport {
 	 */
 	public String delGxHost() {
 		ZGxHostDao gDao = new ZGxHostDaoImp();
-		String[] cmd1 = null;
-		String[] cmd2 = null;
+		//String[] cmd1 = null;
+		//String[] cmd2 = null;
 		if (gDao.delGxHost(id)) {
+			/*
 			StringBuilder str = new StringBuilder();
 			if (port.equals("2009")) {
 				cmd1 = new String[] {
@@ -156,6 +161,8 @@ public class ZGxHostAction extends ActionSupport {
 			} catch (Exception e) {
 				result = R.getJson(0, "删除失败", "");
 			}
+			*/
+			result = R.getJson(1, "删除成功", "");
 		} else {
 			result = R.getJson(0, "删除失败", "");
 		}

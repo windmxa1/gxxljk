@@ -51,5 +51,7 @@ public interface ZUserDao {
 	/**
 	 * 8 返回用户所属分局
 	 */
-	public String getUserBelong(Long uid); 
+	public String getUserBelong(Long uid);
+
+	Long getRunTime(Long time); 
 }

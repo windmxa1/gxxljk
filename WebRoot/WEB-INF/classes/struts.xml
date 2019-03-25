@@ -24,6 +24,7 @@
 		<!-- <action name="startSocket" class="org.action.ZGxHostAction" method="startSocket"> 
 			<result type="json" name="success"> <param name="root">result</param> </result> 
 			</action> -->
+			
 	</package>
 	<package name="ajax" extends="json-default,global" namespace="/">
 		<action name="login" class="org.action.ZUserAction" method="login">
@@ -161,6 +162,11 @@
 	</package>
 
 	<package name="ajax_nolog" extends="json-default" namespace="/">
+		<action name="getRunTime" class="org.action.ZUserAction" method="getRunTime">
+			<result type="json" name="success">
+				<param name="root">result</param>
+			</result>
+		</action>
 		<action name="logout" class="org.action.ZUserAction" method="logout">
 			<result type="json" name="success">
 				<param name="root">result</param>

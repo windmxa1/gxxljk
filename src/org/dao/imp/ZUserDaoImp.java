@@ -1,6 +1,7 @@
 package org.dao.imp;
 
 import org.dao.ZUserDao;
+import org.hibernate.Hibernate;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
@@ -154,6 +155,24 @@ public class ZUserDaoImp implements ZUserDao {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
+		} finally {
+			HibernateSessionFactory.closeSession();
+		}
+	}
+	@Override
+	public Long getRunTime(Long time){
+		try {
+			Session session = HibernateSessionFactory.getSession();
+			String sql = "select count(*) as total from z_run_time where time>?";
+			SQLQuery sqlQuery = session.createSQLQuery(sql);
+			sqlQuery.setParameter(0, time);
+			sqlQuery.setMaxResults(1);
+			sqlQuery.addScalar("total", Hibernate.LONG);
+			Long count =(Long) sqlQuery.uniqueResult();
+			return count;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return 0L;
 		} finally {
 			HibernateSessionFactory.closeSession();
 		}
